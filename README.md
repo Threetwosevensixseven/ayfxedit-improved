@@ -3,18 +3,18 @@
 
 ## Contents
 
-[Overview](#Overview)
-[Interface](#Interface)  
-[Hotkeys](#Hotkeys)  
-[Import effects](#ImportEffects)  
-[Export effects](#ExportEffects)  
-[File formats](#FileFormats)  
-[ZX Spectrum player](#Player)  
-[Version history](#History)  
-[Thanks](#Thanks)  
-[Contacts](#Contacts)  
+[Overview](#overview)   
+[Interface](#interface)  
+[Hotkeys](#hotkeys)  
+[Import effects](#import-effects)  
+[Export effects](#export-effects)  
+[File formats](#file-formats)  
+[ZX Spectrum player](#zx-spectrum-player)  
+[Version history](#version-history)  
+[Thanks](#thanks)  
+[Contacts](#contacts)  
 
-## Overview<a name="Overview"></a>
+## Overview
 
 AY Sound FX Editor is a complete solution to create sound effects for AY-3-8910 sound chip. The effects could be used in games or other software for ZX Spectrum. It is also possible to use them with other micro computers that use the AY-3-8910. The package includes cross editor itself (a Windows software), an example of simple sound effects player with Z80 assembly source code, compiled example, and a library of sound effects. 
 
@@ -22,7 +22,7 @@ The editor allows to create single channel sound effects with duration up to 409
 
 It should be noted that the editor can't create effects on its own, it only allows to edit AY registers data in easy way. It is quite similar to the sample editors in AY music trackers. You have to know how the AY sound chip works in order to get desired results. However, the editor allows to import data from various formats, that could make things easier.
 
-## Interface<a name="Interface"></a>
+## Interface
 
 Program interface is all-english. There is main menu at the top of the window. The items:
 
@@ -63,14 +63,14 @@ Paste - Paste the clipboard contents into the cursor position, current and subse
 **Add new effect** - Append a new effect to the end of the bank and make it current;   
 **Delete effect** - Delete current effect from the bank;   
 **Insert new effect** - Insert a new effect in place of current, the current and all subsequent will be shifted.     
-### Import (see [Import effects](#ImportEffects))
+### Import (see [Import effects](#import-effects))
 
 **PSG for AY** - Import from PSG;   
 **VTX file** - Import from VTX;   
 **VGM file** - Import from VGM;   
 **Wave file** - Import from WAV.
 
-### Export (see [Export effects](#ExportEffects))
+### Export (see [Export effects](#export-effects))
 
 **VTII Sample** - Export as Vortex Tracker II instrument;   
 **Wave file**- Export as WAV file;   
@@ -78,7 +78,7 @@ Paste - Paste the clipboard contents into the cursor position, current and subse
 
 Below the main menu there is a bar with a number of controls. When you hover the mouse above them, a hint is displayed. 
 
-At the left of the bar there are three buttons. Play and Stop perform corresponding actions with the current effect. The button with the piano keys shows or hides the virtual piano window (see [below](#Piano)). 
+At the left of the bar there are three buttons. Play and Stop perform corresponding actions with the current effect. The button with the piano keys shows or hides the virtual piano window (see [below](#piano)). 
 
 At the right of the bar there are bank controls. [Add] appends an effect to the end of the bank. [Del] deletes current effect. Next four buttons with two numbers (current effect and total number of effects in bank) in between are to navigate between effects. Double arrows are to go to the first and the last effect in the bank. Last in the bar there is effect name. You can edit it by clicking it with left mouse button, entering a new name, and pressing Enter to confirm changes. Some hotkeys won't work while the name editor is active. 
 
@@ -86,9 +86,9 @@ All remaining space of the program window is the effect editor. You can use eith
 
 The editor window can be resized vertically with one frame step, but can not be resized horizontally. 
 
-<a name="Piano"></a>There is a special window to simplify creation of sound effects based on musical notes. It can be brought with the button with piano keys or through View->Piano Input item of the main menu. At the left part of the window there is a hint which keyboard buttons correspond to notes. At the right there are controls that affect to the input. The Octave field sets up the current octave (1...8). The Step field sets up the number of frames that the cursor will advance after entering a note. The Fill field sets up how many subsequent frames will be set to the same value with a single note input. The Link button links Step and Fill fields, matching up the fill value to the step. When the Set T button is down, T flag is set for frame at note input, when it is up, existing T value of a frame won't be changed. Set Volume does the same for volume column, entering value that can be changed at the right of the button.
+<a name="piano"></a>There is a special window to simplify creation of sound effects based on musical notes. It can be brought with the button with piano keys or through View->Piano Input item of the main menu. At the left part of the window there is a hint which keyboard buttons correspond to notes. At the right there are controls that affect to the input. The Octave field sets up the current octave (1...8). The Step field sets up the number of frames that the cursor will advance after entering a note. The Fill field sets up how many subsequent frames will be set to the same value with a single note input. The Link button links Step and Fill fields, matching up the fill value to the step. When the Set T button is down, T flag is set for frame at note input, when it is up, existing T value of a frame won't be changed. Set Volume does the same for volume column, entering value that can be changed at the right of the button.
 
-## Hotkeys<a name="Hotkeys"></a>
+## Hotkeys
 
 ### Main window
 Key | Action
@@ -133,7 +133,7 @@ Ctrl+Note key |	Input note one octave below.
 Numpad 1...8 |	Change current octave.
 
 
-## Import effects<a name="ImportEffects"></a>
+## Import effects
 
 Following file formats are supported. 
 
@@ -153,7 +153,7 @@ Registers dump for SN76489 or compatibles, the sound chip that has been used in 
 
 Only standard, unpacked PCM files supported, of any sample rate, bits depth, mono or stereo. Volume envelope gets imported, tone pitch gets analyzed. If it is possible to detect pitch for a frame, T flag sets along with the pitch value, otherwise N flag sets. 
 
-## Export effects<a name="ExportEffects"></a>
+## Export effects
 
 Following file formats are supported. 
 
@@ -177,7 +177,7 @@ When this item is checked, export functions will export current effect only, und
 
 When this item is checked, export functions will export all effects from the bank. The filename can have an optional prefix with effect number and name, this can be selected as the file type in the export dialog. 
 
-## File formats<a name="FileFormats"></a>
+## File formats
 
 16-bit numbers stored in the LSB,MSB format.
 
@@ -221,15 +221,15 @@ Offset | Contents
 +n (m bytes) | The effects data, format is the same as in the single effect file. After every effect there could be a null terminated text string with name of the effect. It may absent, if the bank was saved into a file using corresponding item of the File menu, in this case null terminator bytes are absent as well.
 
 
-## ZX Spectrum player<a name="Player"></a>
+## ZX Spectrum player>
 
-The package includes a simple sound effects player. It is located at /z80player/ayfxplay.a80. This file is a text file with Z80 source code for asm80 cross assembler. There are comments on use and internals as well. 
+The package includes a simple sound effects player. It is located at [/z80player/ayfxplay.a80](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/ayfxplay.a80). This file is a text file with Z80 source code for asm80 cross assembler. There are comments on use and internals as well. 
 
 The player can play effects using all three AY channels. When there is an empty (not playing) channel, it will be used, otherwise the one that was active for longest time will be used. AY music can't play while this version of the player is active. 
 
-Besides the player, there is an example program, available as compiled SCL disk image and source code. All keys has sound effects assigned to them. Space key turns on/off music that is played on the second sound chip of TurboSound device (NedoPC version), if it is available. If the TurboSound is absent, music will play on the same chip, producing various sound artefacts.
+Besides the player, there is an example program, available as [compiled SCL disk image](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/playtest.scl) and [source code](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/playtest.a80). All keys has sound effects assigned to them. Space key turns on/off music that is played on the second sound chip of TurboSound device (NedoPC version), if it is available. If the TurboSound is absent, music will play on the same chip, producing various sound artefacts.
 
-## Version history<a name="History"></a>
+## Version history
 
 v0.6 01.02.17   
 v0.5, v0.51, v0.52 _unreleased during 2006-2017_   
@@ -238,7 +238,7 @@ v0.3 28.02.06
 v0.2 12.02.06   
 v0.1 02.02.06
 
-## Thanks<a name="Thanks"></a>
+## Thanks
 
 Thanks goes to: 
 * __Alone Coder__, for help with the project;  
@@ -247,6 +247,6 @@ Thanks goes to:
 * __Copper Feet__, for asm80 cross assembler;
 * Also thanks to authors of the sound effects that are included into the library.
 
-## Contacts<a name="Contacts"></a>
+## Contacts
 
 You can send bug reports, suggestions, or sound effects to include into the bundled library, at [shiru@mail.ru](mailto://shiru@mail.ru).
