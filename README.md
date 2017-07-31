@@ -16,7 +16,7 @@
 
 ## Overview
 
-AY Sound FX Editor is a complete solution to create sound effects for AY-3-8910 sound chip. The effects could be used in games or other software for ZX Spectrum. It is also possible to use them with other micro computers that use the AY-3-8910. The package includes cross editor itself (a Windows software), an example of simple sound effects player with Z80 assembly source code, compiled example, and a library of sound effects. 
+[AY Sound FX Editor](https://shiru.untergrund.net/software.shtml) is a complete solution to create sound effects for AY-3-8910 sound chip. The effects could be used in games or other software for ZX Spectrum. It is also possible to use them with other micro computers that use the AY-3-8910. The package includes cross editor itself (a Windows software), an example of simple sound effects player with Z80 assembly source code, compiled example, and a library of sound effects. 
 
 The editor allows to create single channel sound effects with duration up to 4096 TV frames. Frame duration is 1/50s, so maximum effect duration is about 80 seconds. Volume, noise and mixer settings can be changed every frame. Data is stored in a compact format that omits repeating values. Effects are combined into banks, up to 256 effects. Effects player works with a bank, an effect is played using its order number in the bank. 
 
@@ -54,7 +54,7 @@ Paste - Paste the clipboard contents into the cursor position, current and subse
 
 ### View
 
-**Piano input** - Show/hide virtual piano window (see below);   
+**Piano input** - Show/hide virtual piano window (see [below](#piano));   
 **Linear period** - Display tone values in linear scale (irregular spread of actual frequences);   
 **Logarithmic period** - Display tone values in logarithmic scale.   
 
@@ -72,7 +72,7 @@ Paste - Paste the clipboard contents into the cursor position, current and subse
 
 ### Export (see [Export effects](#export-effects))
 
-**VTII Sample** - Export as Vortex Tracker II instrument;   
+**VTII Sample** - Export as [Vortex Tracker II](http://bulba.untergrund.net/vortex_e.htm) instrument;   
 **Wave file**- Export as WAV file;   
 **CSV** - Export as text-based CSV file.
 
@@ -139,11 +139,11 @@ Following file formats are supported.
 
 ### PSG 
 
-AY registers dump. Files with complete 16-byte header are supported. These files could be created with AY Emulator or Z80Stealth. You can select channel that will be source of data before import. Auto option will select the channel where the volume changes first, with automatic skip of the pause before. Tone, noise, volume, and mixer settings of selected channel will be imported. To simplify things, it is better to use source files with single channel effects. 
+AY registers dump. Files with complete 16-byte header are supported. These files could be created with [AY Emulator](https://bulba.untergrund.net/emulator_e.htm) or [Z80Stealth](http://z80stealth.emuunlim.com/). You can select channel that will be source of data before import. Auto option will select the channel where the volume changes first, with automatic skip of the pause before. Tone, noise, volume, and mixer settings of selected channel will be imported. To simplify things, it is better to use source files with single channel effects. 
 
 ### VTX 
 
-AY registers dump. These files could be created with AY Emulator and UnrealSpeccy. Import options are the same as for PSG. 
+AY registers dump. These files could be created with [AY Emulator](https://bulba.untergrund.net/emulator_e.htm) and [UnrealSpeccy](https://sourceforge.net/projects/unrealspeccy/). Import options are the same as for PSG. 
 
 ### VGM 
 
@@ -159,7 +159,7 @@ Following file formats are supported.
 
 ### VTII Instrument 
 
-Vortex Tracker II instrument, which is a plain text file. Export dialogs allows to set a base note that should be used to get original pitch in the tracker. 
+[Vortex Tracker II](http://bulba.untergrund.net/vortex_e.htm) instrument, which is a plain text file. Export dialogs allows to set a base note that should be used to get original pitch in the tracker. 
 
 ### WAV 
 
@@ -195,7 +195,7 @@ Bit(s) | Purpose
 
 When the bit5 set, two bytes with tone period will follow; when the bit6 set, a single byte with noise period will follow; when both bits are set, first two bytes of tone period, then single byte with noise period will follow. When none of the bits are set, next flags byte will follow. 
 
-End of the effect is marked with byte sequence #D0, #20. Player should detect it before outputting it to the AY registers, by checking noise period value to be equal #20. The editor considers last non-zero volume value as the last frame of an effect, other parameters aren't matter. 
+End of the effect is marked with byte sequence `#D0, #20`. Player should detect it before outputting it to the AY registers, by checking noise period value to be equal `#20`. The editor considers last non-zero volume value as the last frame of an effect, other parameters aren't matter. 
 
 ### Effects bank, file extension .afb 
 
