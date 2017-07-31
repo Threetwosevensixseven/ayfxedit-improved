@@ -1,0 +1,243 @@
+NOTE: This text needs thorough rewriting.
+      Haruhiko Okumura <okumura@matsusaka-u.ac.jp>
+      Matsusaka University, Matsusaka, Japan.
+
+/***********************************************************
+    Data Compression Algorithms:
+    LZSS, LArc, LZARI, LHarc, ar, and All That
+                               (C) Haruhiko Okumura, 1991
+***********************************************************/
+
+    What follows is a very brief description of the past and
+the present activities of the Japanese hobbyists interested
+in data compression.
+    In 1987, I was asked by a magazine editor to write an
+article about data compression.  I wrote a manuscript and
+an accompanying program, sent them to the editor, and forgot
+about them.  The next time I heard from him I was told that
+the magazine was discontinued.  So I uploaded my program,
+LZSS, to a Japanese BBS.  That was May 1, 1988.  Soon a
+number of hobby programmers gathered and began improving on
+that program.  The project culminated in Kazuhiko Miki's
+archiver LArc, which was fairly widey used in Japan.  Dr.
+Miki is a medical specialist working at a governmental
+office.
+    My program LZSS, and hence LArc, were based on a very
+simple idea.  Suppose I'm going to write "compression" here.
+But probably I've already used that word before in this
+file.  If I used that word 57 characters before, I might as
+well write "go 57 characters back, and read 11 characters,"
+or <57,11> for short.  In general, when I've already used
+the string of characters among the recent 4096 characters,
+say, I encode the string by a <position,length> pair.
+    In Storer's [8] terminology, this is a sliding
+dictionary algorithm, analyzed first by Ziv and Lempel [14]
+and then by Storer and Szymanski [9], among others.
+    Later versions of LZSS and LArc use binary search trees
+to facilitate string matching; see Bell [1].
+    Incidentally, there are two distinct Ziv-Lempel (LZ)
+methods: sliding dictionary [14] and dynamic dictionary [15]
+in Storer's terminology.  The so-called LZW method [12]
+belongs to the latter.  Most pre-LHarc compression tools,
+such as 'compress', 'ARC', and 'PKARC', were based on the
+LZW method.
+    During the summer of 1988, I wrote another compression
+program, LZARI.  This program is based on the following
+observation:  Each output of LZSS is either a single
+character or a <position,length> pair.  A single character
+can be coded as an integer between 0 and 255.  As for the
+<length> field, if the upper limit of <length> is 256,
+say, it can be coded as an integer between 256 and 511.
+Thus, I can say that there are 512 kinds of "characters,"
+and the "characters" 256 through 511 are accompanied by a
+<position> field.  These 512 "characters" can be Huffman-
+coded, or better still, algebraically coded.  The <position>
+field can be coded in the same manner.  In LZARI I used an
+adaptive algebraic compression [13, 2] to encode the
+"characters," and static algebraic compression to encode the
+<position> field.  (There are several versions of LZARI;
+some of them are slightly different from the above
+description.)  The compression of LZARI is very tight,
+though rather slow.
+    Incidentally, I was told that there is now a shareware
+compression program whose output is bit-by-bit equivalent to
+the output of one version of my LZARI.
+    Haruyasu Yoshizaki (Yoshi), a physician and guru hobby
+programmer, worked very hard to make LZARI faster.  Most
+importantly, he replaced LZARI's algebraic compression by
+dynamic Huffman coding.
+    His program, LZHUF, was very successful.  It was much
+faster than my LZARI.  As for compression ratio, Huffman
+cannot beat algebraic compression, but the difference was
+very small.
+    Yoshi rewrote the compression engine of LZHUF in
+assembler, and added a nifty user interface.  His archiver,
+LHarc, is now the de facto standard in Japanese BBSs.
+After Prof. Kenjirou Okubo, a mathematician, introduced
+LHarc to the United States, it became world-famous.  Other
+vendors began using similar techniques: sliding dictionary
+plus statistical compressions such as Huffman and Shannon-
+Fano.
+    Although LHarc was much faster than LZARI, we weren't
+quite satisfied with its speed.  Because LHarc was based on
+dynamic Huffman, it had to update Huffman tree every time it
+received a character.  Yoshi and I tried other dynamic
+Huffman algorithms [5, 10, 11], but improvements were not as
+great as we desired.
+    So I took a different step: replacing LHarc's dynamic
+Huffman by a static Huffman method.
+    Traditional static Huffman coding algorithm first scans
+the input file to count character distribution, then builds
+Huffman tree and encodes the file.  In my approach, the
+input file is read only once.  It is first compressed by a
+sliding dictionary method like LZARI and LHarc, and at the
+same time the distributions of the "characters" (see above)
+and positions are counted.  The output of this process is
+stored in main memory.  When the memory is full (or the
+input is exhausted), the Huffman trees are constructed, and
+the half-processed file is actually compressed and output.
+    In static Huffman, the Huffman tree must be stored in
+the compressed file.  In the traditional approach this
+information consumes hundreds of bytes.  My approach is to
+standardize Huffman trees so that (1) each left subtree is
+no deeper than its right counterpart, and (2) the leaves at
+the same level are sorted in ascending order.  In this way
+the Huffman tree can be uniquely specified by the lengths
+of the codewords.  Moreover, the resulting table is again
+compressed by the same Huffman coding algorithm---a kind of
+bootstraping.
+    To make the decoding program simpler, the code is
+adjusted so that the codeword lengths do not exceed 16 bits.
+Since this adjusting is rarely needed, the algorithm is made
+very simple.  It does not create optimal length-limited
+Huffman trees; see e.g. [6] for an optimal algorithm.
+Incidentally, my early program had a bug here, which was now
+removed thanks to Yoshi.
+    The sliding dictionary algorithm is also improved by
+Yoshi using a "PATRICIA tree" data structure; see McCreight
+[7] and Fiala and Greene [4].
+    After completing my algorithm, I learned that Brent [3]
+also used a sliding dictionary plus Huffman coding.  His
+method, SLH, is simple and elegant, but since it doesn't
+find the most recent longest match, the distribution of
+match position becomes flat.  This makes the second-stage
+Huffman compression less efficient.
+    On the basis of these new algorithms, Yoshi began to
+rewrite his LHarc, but it took him so long that I decided to
+write my own archiver.  My archiver was quite recklessly
+named 'ar'.  I should have named it 'har' (after my name),
+say, because 'ar' collides with the name of UNIX's archiver.
+I didn't want my program to compete with LHarc, but I wanted
+many people to try the algorithm, so I wrote it in pure ANSI
+C.  This is the reason 'ar' lacks many faculties necessary
+for a real archiver.  Incidentally, I think one recent
+shareware archiver written by an American uses my algorithm.
+    Yoshi finally showed us his new archiver written in C.
+It was tentatively named LHx.  He then rewrote the main
+logic in assembler.  His new archiver, LH, is in beta test
+now.  The suffix 'arc' was dropped in deference to the
+archiver ARC.
+    The foregoing is a brief excerpt from what Yoshi and I
+wrote for the January, 1991 issue of "C Magazine" (in
+Japanese).
+    Recently we learned that for DOS 5.0, LH means LoadHigh,
+an internal command.  We will have to abandon the name
+unless Microsoft abandons it!
+    Also, I was told that Fiala and Greene's algorithm was
+patented ("Textual Substitution Data Compression With Finite
+Length Search Windows," U.S. Patent 4,906,991, Mar. 6, 1990).
+The document says that it is one of the three patent
+applications made by the authors relating to data
+compression.  The other two were "Start, Step, Stop Unary
+Encoding for Data Compression," Application Ser. No.
+07/187,697, and "Search Tree Data Structure Encoding for
+Textual Substitution Data Compression Systems," Application
+Ser. No. 07/187,699.
+    Furthermore, I learned that the original Ziv-Lempel
+compression method (Eastman et al., U.S. Patent 4,464,650,
+8/1984) and the LZW method (Welch, 4,558,302, 12/1985) were
+patented.  I also heard that Richard Stallman, of the Free
+Software Foundation, author of the EMACS editor and leader
+of the GNU project, ceased to use 'compress' program any
+more because its LZW algorithm got patented.
+    Are algorithms patentable?  (See [16].)  If these
+patents should turn out to be taken seriously, all
+compression programs now in use may infringe some of these
+patents.
+
+REFERENCES
+
+ [1] Timothy C. Bell.
+     Better OPM/L text compression.
+     IEEE Transactions on Communications,
+     COM-34(12):1176--1182, 1986.
+ [2] Timothy C. Bell, John G. Cleary, and Ian H. Witten.
+     Text Compression.
+     Prentice Hall, 1990.
+ [3] R. P. Brent.
+     A linear algorithm for data compression.
+     The Australian Computer Journal, 19(2):64--68, 1987.
+ [4] Edward R. Fiala and Daniel H. Greene.
+     Data compression with finite windows.
+     Communications of the ACM, 32(4):490--505, 1989.
+ [5] Donald E. Knuth.
+     Dynamic Huffman coding.
+     Journal of Algorithms, 6:163--180, 1985.
+ [6] Lawrence L. Larmore and Daniel S. Hirschberg.
+     A fast algorithm for optimal length-limited Huffman codes.
+     Journal of the Association for Computing Machinery,
+     37(3):464--473, 1990.
+ [7] Edward M. McCreight.
+     A space-economical suffix tree construction algorithm.
+     Journal of the Association for Computing Machinery,
+     23(2):262--272, 1976.
+ [8] James A. Storer.
+     Data Compression: Methods and Theory.
+     Computer Science Press, Rockville, MD., 1988.
+ [9] James A. Storer and Thomas G. Szymanski.
+     Data compression via textual substitution.
+     Journal of the Association for Computing Machinery,
+     29(4):928--951, 1982.
+[10] Jeffrey Scott Vitter.
+     Design and analysis of dynamic Huffman codes.
+     Journal of the Association for Computing Machinery,
+     34(4):825--845, 1987.
+[11] Jeffrey Scott Vitter.
+     Algorithm 673: Dynamic Huffman coding.
+     ACM Transactions on Mathematical Software,
+     15(2):158--167, 1989.
+[12] Terry A. Welch.
+     A technique for high-performance data compression.
+     IEEE Computer}, 17(6):8--19, 1984.
+[13] Ian H. Witten, Radford M. Neal, and John G. Cleary.
+     Arithmetic coding for data compression.
+     Communications of the ACM, 30(6):520--540, 1987.
+[14] Jacob Ziv and Abraham Lempel.
+     A universal algorithm for sequential data compression.
+     IEEE Transactions on Information Theory,
+     IT-23(3):337--343, 1977.
+[15] Jacob Ziv and Abraham Lempel.
+     Compression of individual sequences via variable-rate coding.
+     IEEE Transactions on Information Theory,
+     IT-24(5):530--536, 1978.
+[16] Edward N. Zalta.
+     Are algorithms patentable?
+     Notices of the American Mathematical Society,
+     35(6):796--799, 1988.
+
+------------------------------------------------------------
+
+    LZSS, LZARI, LZHUF, LHarc, and AR002 ('ar') can be
+downloaded from many BBSs, such as CompuServe's IBMPRO
+Library.  Note that the final version of LHarc is 1.13d.
+"LHICE" is a _fake_ version of LHarc (contrary to what
+the DDJ magazine says).
+    I welcome your comments.  Please write to:
+
+        CompuServe:  74050,1022
+        Internet:    74050.1022@compuserve.com
+        Snailmail:   12-2-404 Green Heights, Nagasawa,
+                     Yokosuka 239, Japan
+
+                                        Haruhiko Okumura
+

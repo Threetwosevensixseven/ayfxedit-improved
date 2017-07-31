@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+/src/Win32/Debug
+/src/lh5/__history
+/src/__history
+/src/__astcache
+/src/*.local
+/src/*.stat
