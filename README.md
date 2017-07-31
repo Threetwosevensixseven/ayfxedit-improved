@@ -192,6 +192,7 @@ Bit(s) | Purpose
  bit5 |     Change Tone
  bit6  |    Change Noise
  bit7  |    Disable N
+
 When the bit5 set, two bytes with tone period will follow; when the bit6 set, a single byte with noise period will follow; when both bits are set, first two bytes of tone period, then single byte with noise period will follow. When none of the bits are set, next flags byte will follow. 
 
 End of the effect is marked with byte sequence #D0, #20. Player should detect it before outputting it to the AY registers, by checking noise period value to be equal #20. The editor considers last non-zero volume value as the last frame of an effect, other parameters aren't matter. 
@@ -203,12 +204,16 @@ Offset | Contents
 --- | ---
 +0 (1 byte) | Total number of effects in the bank, up to 256 (0 means 256);
 +1 (2 bytes per effect)  |Table of offsets to data of every effect. Offset value is given relative to the second byte of the offset itself, this allows to calculate absolute address very fast:
-              hl=offset in the effects table
-              ld c,(hl)
-              inc hl
-              ld b,(hl)
-              add hl,bc   
-              hl=absolute address of effect data
+
+```
+hl=offset in the effects table
+ld c,(hl)
+inc hl
+ld b,(hl)
+add hl,bc   
+hl=absolute address of effect data
+```
+
 #### Data 
 
 Offset | Contents
