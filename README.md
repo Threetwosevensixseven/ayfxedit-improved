@@ -221,7 +221,7 @@ Offset | Contents
 +n (m bytes) | The effects data, format is the same as in the single effect file. After every effect there could be a null terminated text string with name of the effect. It may absent, if the bank was saved into a file using corresponding item of the File menu, in this case null terminator bytes are absent as well.
 
 
-## ZX Spectrum player>
+## ZX Spectrum player
 
 The package includes a simple sound effects player. It is located at [/z80player/ayfxplay.a80](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/ayfxplay.a80). This file is a text file with Z80 source code for [asm80](http://www.asm80.com/) cross assembler. There are comments on use and internals as well. 
 
