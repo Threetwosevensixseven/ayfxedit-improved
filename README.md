@@ -223,7 +223,7 @@ Offset | Contents
 
 ## ZX Spectrum player>
 
-The package includes a simple sound effects player. It is located at [/z80player/ayfxplay.a80](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/ayfxplay.a80). This file is a text file with Z80 source code for asm80 cross assembler. There are comments on use and internals as well. 
+The package includes a simple sound effects player. It is located at [/z80player/ayfxplay.a80](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/ayfxplay.a80). This file is a text file with Z80 source code for [asm80](http://www.asm80.com/) cross assembler. There are comments on use and internals as well. 
 
 The player can play effects using all three AY channels. When there is an empty (not playing) channel, it will be used, otherwise the one that was active for longest time will be used. AY music can't play while this version of the player is active. 
 
