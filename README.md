@@ -63,14 +63,14 @@ Paste - Paste the clipboard contents into the cursor position, current and subse
 **Add new effect** - Append a new effect to the end of the bank and make it current;   
 **Delete effect** - Delete current effect from the bank;   
 **Insert new effect** - Insert a new effect in place of current, the current and all subsequent will be shifted.     
-### Import (see Import effects)
+### Import (see [Import effects](#ImportEffects))
 
 **PSG for AY** - Import from PSG;   
 **VTX file** - Import from VTX;   
 **VGM file** - Import from VGM;   
 **Wave file** - Import from WAV.
 
-### Export (see Export effects)
+### Export (see [Export effects](#ExportEffects))
 
 **VTII Sample** - Export as Vortex Tracker II instrument;   
 **Wave file**- Export as WAV file;   
