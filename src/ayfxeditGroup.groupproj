@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{7D202A1E-591E-40DE-9695-14F964511702}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ayfxedit.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ayfxedit">
+        <MSBuild Projects="ayfxedit.cbproj"/>
+    </Target>
+    <Target Name="ayfxedit:Clean">
+        <MSBuild Projects="ayfxedit.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ayfxedit:Make">
+        <MSBuild Projects="ayfxedit.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ayfxedit"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ayfxedit:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ayfxedit:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
