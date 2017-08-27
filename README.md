@@ -1,7 +1,5 @@
 
-# AY Sound FX Editor v0.6
-
-![alt text](https://raw.githubusercontent.com/Threetwosevensixseven/ayfxedit-improved/master/screenshot-1.png "AYFXedit User Interface")
+# AY Sound FX Editor (Improved)
 
 ## Contents
 
@@ -16,13 +14,15 @@
 [Thanks](#thanks)  
 [Contacts](#contacts)  
 
+![AYFXedit User Interface](https://raw.githubusercontent.com/Threetwosevensixseven/ayfxedit-improved/master/screenshot-1.png "AYFXedit User Interface")
+
 ## Overview
 
 [AY Sound FX Editor](https://shiru.untergrund.net/software.shtml) is a complete solution to create sound effects for the [AY-3-8910](http://map.grauw.nl/resources/sound/generalinstrument_ay-3-8910.pdf) sound chip. The effects can be used in games or other software for ZX Spectrum. It is also possible to use them with other micro computers that use the AY-3-8910. The package includes a [Windows cross editor](https://github.com/Threetwosevensixseven/ayfxedit-improved/raw/master/ayfxedit.exe), an example [sound effects player](https://raw.githubusercontent.com/Threetwosevensixseven/ayfxedit-improved/master/zeusexample/ayfxplay.asm) with Z80 assembly source code, a compiled [example](https://github.com/Threetwosevensixseven/ayfxedit-improved/raw/master/zeusexample/playtest.tap), and a [sound effects library](https://github.com/Threetwosevensixseven/ayfxedit-improved/tree/master/sfxcollection). 
 
-The editor allows to create single channel sound effects with duration up to 4096 TV frames. Frame duration is 1/50s, so maximum effect duration is about 80 seconds. Volume, noise and mixer settings can be changed every frame. Data is stored in a compact format that omits repeating values. Effects are combined into banks, up to 256 effects. Effects player works with a bank, an effect is played using its order number in the bank. 
+The editor allows to create single channel sound effects with duration up to 4096 TV frames. Frame duration is 1/50s, so maximum effect duration is about 80 seconds. Volume, noise and mixer settings can be changed every frame. Data is stored in a compact format that omits repeating values. Effects are combined into banks, up to 256 effects. The effects player works with a bank, an effect is played using its order number in the bank. 
 
-It should be noted that the editor can't create effects on its own, it only allows to edit AY registers data in easy way. It is quite similar to the sample editors in AY music trackers. You have to know how the AY sound chip works in order to get desired results. However, the editor allows to import data from various formats, that could make things easier.
+It should be noted that the editor can't create effects on its own, it only allows to edit AY registers data in easy way. It is quite similar to the sample editors in AY music trackers. You have to know how the AY sound chip works in order to get your desired results. However, the editor allows you to import data from various formats, which can make things easier.
 
 ### Improved Version
 
@@ -30,7 +30,7 @@ This "improved" version is a fork of [Shiru](https://shiru.untergrund.net/aboutm
 
 I got frustrated trying to build Shiru's C++ Builder source in any of the publicly available C++ Builder versions, so I converted the project to unicode and built this fork in the free [C++ Builder 10.2 Tokyo Starter Edition](https://www.embarcadero.com/products/cbuilder/starter/info).
 
-The main reason I forked ayfxedit was because I wanted to add looped sustain fx to the editor and player - my use case is a thrust sound for [Jet Power Jack](http://zxbasic.uk/db/40) that ramps up when you thrust, sustains as long as you hold '''SPACE''' down, then fades away when you release ```SPACE```. I eventually realised I could do this in the player without needing to modifiy the editor, but by then I had made some other small UI enhancements like aligning the column headers, and being able to double-click on .afx and .afb files if the file extensions are registed.
+The main reason I forked ayfxedit was because I wanted to add looped sustain effects to the editor and player - my use case was a thrust sound for [Jet Power Jack](http://zxbasic.uk/db/40) that ramps up when you thrust, sustains as long as you hold '''SPACE''' down, then fades away when you release ```SPACE```. I eventually realised I could do this in the player without needing to modifiy the editor, but by then I had made some other small UI enhancements like aligning the column headers, and being able to double-click on .afx and .afb files if the file extensions are registed.
 
 I would also like to make an enhanced player that locks certain sounds to certain channels, so thrust is panned center, and other sounds like pick up and die are panned left/right. ANn maybe even a pseudo-surround-sound mode that bounces a monophonic fx around all three channels...
 
