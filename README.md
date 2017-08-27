@@ -257,10 +257,11 @@ v0.1 02.02.06
 ## Thanks
 
 Thanks goes to: 
-* __Alone Coder__, for help with the project;  
-* __Sergey Bulba__, for AY Emulator, Vortex Tracker, and various docs at his webpage;
-* __SMT__, for UnrealSpeccy and open source VTX format player;
-* __Copper Feet__, for asm80 cross assembler;
+* __[Shiru](https://shiru.untergrund.net/aboutme.shtml)__, for the definitive original version of the project;  
+* __[Alone Coder](http://alonecoder.nedopc.com/zx/)__, for help with the project;  
+* __[Sergey Bulba](https://bulba.untergrund.net/main_e.htm)__, for [AY Emulator](https://bulba.untergrund.net/emulator_e.htm), [Vortex Tracker](https://bulba.untergrund.net/vortex_e.htm), and various docs at his webpage;
+* __[SMT](https://sourceforge.net/u/open-smt/profile/)__, for [UnrealSpeccy](https://sourceforge.net/projects/unrealspeccy/) and [open source VTX format player](https://sourceforge.net/projects/zxssk/);
+* __[Copper Feet](http://speccy.info/Copper_Feet)/[Bytex](http://speccy.info/Bytex)__, for [asm80](http://zxsoft.zxby.org/ZXUTIL/asm80222.rar) cross assembler;
 * Also thanks to authors of the sound effects that are included into the library.
 
 ## Contacts
