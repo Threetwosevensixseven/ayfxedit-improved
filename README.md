@@ -26,7 +26,7 @@ It should be noted that the editor can't create effects on its own, it only allo
 
 ### Improved Version
 
-This improved version is a fork of [Shiru](https://shiru.untergrund.net/aboutme.shtml)'s superb [ayfxedit tool and player](https://shiru.untergrund.net/software.shtml), available [here](https://shiru.untergrund.net/software.shtml). It's not really improved in any meaningful way, it was a good-natured nod to the  [Vortex II AY tracker](https://bulba.untergrund.net/vortex_e.htm) mod made by [siril](https://demozoo.org/sceners/8954/)/[4d](https://demozoo.org/groups/8953/), named [Vortex Tracker II Improved](https://github.com/oisee/vti) :)
+This improved version is a fork of [Shiru](https://shiru.untergrund.net/aboutme.shtml)'s superb [ayfxedit tool and player](https://shiru.untergrund.net/software.shtml), available [here](https://shiru.untergrund.net/software.shtml). It's not really improved in any meaningful way; the name was a good-natured nod to the  [Vortex II AY tracker](https://bulba.untergrund.net/vortex_e.htm) mod made by [siril](https://demozoo.org/sceners/8954/)/[4d](https://demozoo.org/groups/8953/), called [Vortex Tracker II Improved](https://github.com/oisee/vti) :)
 
 The main reason I forked ayfxedit was because I wanted to add looped sustain fx to the editor and player - my use case is a thrust sound for [Jet Power Jack](http://zxbasic.uk/db/40) that ramps up when you thrust, sustains as long as you hold '''SPACE''' down, then fades away when you release ```SPACE```. ANd some other small UI enhancements like being able to double-click on .afx and .afb files.
 
