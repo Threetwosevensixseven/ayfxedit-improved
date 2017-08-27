@@ -10,7 +10,7 @@
 [Import effects](#import-effects)  
 [Export effects](#export-effects)  
 [File formats](#file-formats)  
-[ZX Spectrum player](#zx-spectrum-player) 
+[ZX Spectrum player](#zx-spectrum-player)  
 [Video](#video)  
 [Version history](#version-history)  
 [Thanks](#thanks)  
