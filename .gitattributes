@@ -3,3 +3,4 @@
 *.a80 linguist-language=Assembly
 *.c linguist-language=cpp
 *.cpp linguist-language=cpp
+*.dfm linguist-language=cpp
