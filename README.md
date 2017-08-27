@@ -18,7 +18,7 @@
 
 ## Overview
 
-[AY Sound FX Editor](https://shiru.untergrund.net/software.shtml) is a complete solution to create sound effects for AY-3-8910 sound chip. The effects could be used in games or other software for ZX Spectrum. It is also possible to use them with other micro computers that use the AY-3-8910. The package includes cross editor itself (a Windows software), an example of simple sound effects player with Z80 assembly source code, compiled example, and a library of sound effects. 
+[AY Sound FX Editor](https://shiru.untergrund.net/software.shtml) is a complete solution to create sound effects for the [AY-3-8910](http://map.grauw.nl/resources/sound/generalinstrument_ay-3-8910.pdf) sound chip. The effects can be used in games or other software for ZX Spectrum. It is also possible to use them with other micro computers that use the AY-3-8910. The package includes a Windows cross editor, a sound effects player example with Z80 assembly source code, a compiled example, and a library of sound effects. 
 
 The editor allows to create single channel sound effects with duration up to 4096 TV frames. Frame duration is 1/50s, so maximum effect duration is about 80 seconds. Volume, noise and mixer settings can be changed every frame. Data is stored in a compact format that omits repeating values. Effects are combined into banks, up to 256 effects. Effects player works with a bank, an effect is played using its order number in the bank. 
 
@@ -26,13 +26,13 @@ It should be noted that the editor can't create effects on its own, it only allo
 
 ### Improved Version
 
-This improved version is a fork of [Shiru](https://shiru.untergrund.net/aboutme.shtml)'s superb [ayfxedit tool and player](https://shiru.untergrund.net/software.shtml), available [here](https://shiru.untergrund.net/software.shtml). It's not really improved in any meaningful way; the name was a good-natured nod to the  [Vortex II AY tracker](https://bulba.untergrund.net/vortex_e.htm) mod made by [siril](https://demozoo.org/sceners/8954/)/[4d](https://demozoo.org/groups/8953/), called [Vortex Tracker II Improved](https://github.com/oisee/vti) :)
+This "improved" version is a fork of [Shiru](https://shiru.untergrund.net/aboutme.shtml)'s superb [ayfxedit tool and player](https://shiru.untergrund.net/software.shtml), available [here](https://shiru.untergrund.net/software.shtml). It's not really improved in any meaningful way; the name was a good-natured nod to the  [Vortex II AY tracker](https://bulba.untergrund.net/vortex_e.htm) mod made by [siril](https://demozoo.org/sceners/8954/)/[4d](https://demozoo.org/groups/8953/), called [Vortex Tracker II Improved](https://github.com/oisee/vti) :)
 
-The main reason I forked ayfxedit was because I wanted to add looped sustain fx to the editor and player - my use case is a thrust sound for [Jet Power Jack](http://zxbasic.uk/db/40) that ramps up when you thrust, sustains as long as you hold '''SPACE''' down, then fades away when you release ```SPACE```. ANd some other small UI enhancements like being able to double-click on .afx and .afb files.
+I got frustrated trying to build Shiru's C++ Builder source in any of the publicly available C++ Builder versions, so I converted the project to unicode and built this fork in the free [C++ Builder 10.2 Tokyo Starter Edition](https://www.embarcadero.com/products/cbuilder/starter/info).
 
-I got frustrated trying to build Shiru's C++ Builder source in any of the publicly available versions C++ Builder, so I converted the project to unicode and built this fork in the free [C++ Builder 10.2 Tokyo Starter Edition](https://www.embarcadero.com/products/cbuilder/starter/info).
+The main reason I forked ayfxedit was because I wanted to add looped sustain fx to the editor and player - my use case is a thrust sound for [Jet Power Jack](http://zxbasic.uk/db/40) that ramps up when you thrust, sustains as long as you hold '''SPACE''' down, then fades away when you release ```SPACE```. I eventually realised I could do this in the player without needing to modifiy the editor, but by then I had made some other small UI enhancements like aligning the column headers, and being able to double-click on .afx and .afb files if the file extensions are registed.
 
-I also wanted to make an enhanced player that locks certain sounds to certain channels, so thrust is  panned center, and other sounds like pick up and die are panned left/right. Perhaps even a pseudo-surround-sound mode that bounces a monophonic fx around all three channels...
+I would also like to make an enhanced player that locks certain sounds to certain channels, so thrust is panned center, and other sounds like pick up and die are panned left/right. ANn maybe even a pseudo-surround-sound mode that bounces a monophonic fx around all three channels...
 
 I added an alternate set of z80 player and test files optimised for the [Zeus](http://www.desdes.com/products/oldfiles/zeus.htm) Windows cross-assembler, and translated Shiru's Russian comments into English.
 
