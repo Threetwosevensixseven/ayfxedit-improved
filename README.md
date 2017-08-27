@@ -11,7 +11,7 @@
 [Export effects](#export-effects)  
 [File formats](#file-formats)  
 [ZX Spectrum player](#zx-spectrum-player)  
-[Video](#video)  
+[Demo Video](#demo-video)  
 [Version history](#version-history)  
 [Thanks](#thanks)  
 [Contacts](#contacts)  
@@ -247,7 +247,7 @@ The player can play effects using all three AY channels. When there is an empty 
 
 Besides the player, there is an example program, available as [compiled SCL disk image](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/playtest.scl) and [source code](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/playtest.a80). All keys has sound effects assigned to them. Space key turns on/off music that is played on the second sound chip of TurboSound device (NedoPC version), if it is available. If the TurboSound is absent, music will play on the same chip, producing various sound artefacts.
 
-## Video
+## Demo Video
 
 <a href="https://www.youtube.com/watch?v=XI6aW2QSUXw" title="AYFX Editor demonstration video" target="_blank"><img src="https://github.com/Threetwosevensixseven/ayfxedit-improved/raw/master/images/video-1.png" alt="AYFX Editor demonstration video" width="480"></a>
 
