@@ -1,8 +1,11 @@
 #sources
 *.asm linguist-language=Assembly
 *.a80 linguist-language=Assembly
+*.C linguist-language=cpp
 *.c linguist-language=cpp
+*.h linguist-language=cpp
+*.H linguist-language=cpp
 *.cpp linguist-language=cpp
 *.dfm linguist-language=cpp
-src/lh5/* cpp
+src/lh5/* cpp linguist-language=cpp
 
