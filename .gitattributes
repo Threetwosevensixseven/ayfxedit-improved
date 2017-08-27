@@ -7,5 +7,5 @@
 *.H linguist-language=cpp
 *.cpp linguist-language=cpp
 *.dfm linguist-language=cpp
-src/lh5/* cpp linguist-language=cpp
+src/lh5/* linguist-language=cpp
 
