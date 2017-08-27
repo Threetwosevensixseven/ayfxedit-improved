@@ -1,6 +1,8 @@
 
 # AY Sound FX Editor v0.6
 
+![alt text](https://raw.githubusercontent.com/Threetwosevensixseven/ayfxedit-improved/master/screenshot-1.png "AYFXedit User Interface")
+
 ## Contents
 
 [Overview](#overview)   
