@@ -4,14 +4,14 @@
 ## Contents
 
 [Overview](#overview)   
-[Improved Version](#improved-version)  
+[Improved version](#improved-version)  
 [Interface](#interface)  
 [Hotkeys](#hotkeys)  
 [Import effects](#import-effects)  
 [Export effects](#export-effects)  
 [File formats](#file-formats)  
 [ZX Spectrum player](#zx-spectrum-player)  
-[Demo Video](#demo-video)  
+[Demo video](#demo-video)  
 [Version history](#version-history)  
 [Thanks](#thanks)  
 [Contacts](#contacts)  
@@ -26,7 +26,7 @@ The editor allows to create single channel sound effects with duration up to 409
 
 It should be noted that the editor can't create effects on its own, it only allows to edit AY registers data in easy way. It is quite similar to the sample editors in AY music trackers. You have to know how the AY sound chip works in order to get your desired results. However, the editor allows you to import data from various formats, which can make things easier.
 
-### Improved Version
+### Improved version
 
 This "improved" version is a fork of [Shiru](https://shiru.untergrund.net/aboutme.shtml)'s superb [ayfxedit tool and player](https://shiru.untergrund.net/software.shtml), available [here](https://shiru.untergrund.net/software.shtml). It's not really improved in any meaningful way; the name was a good-natured nod to the  [Vortex II AY tracker](https://bulba.untergrund.net/vortex_e.htm) mod made by [siril](https://demozoo.org/sceners/8954/)/[4d](https://demozoo.org/groups/8953/), called [Vortex Tracker II Improved](https://github.com/oisee/vti) :)
 
@@ -247,7 +247,7 @@ The player can play effects using all three AY channels. When there is an empty 
 
 Besides the player, there is an example program, available as [compiled SCL disk image](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/playtest.scl) and [source code](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/playtest.a80). All keys has sound effects assigned to them. Space key turns on/off music that is played on the second sound chip of TurboSound device (NedoPC version), if it is available. If the TurboSound is absent, music will play on the same chip, producing various sound artefacts.
 
-## Demo Video
+## Demo video
 
 <a href="https://www.youtube.com/watch?v=XI6aW2QSUXw" title="AYFX Editor demonstration video" target="_blank"><img src="https://github.com/Threetwosevensixseven/ayfxedit-improved/raw/master/images/video-1.png" alt="AYFX Editor demonstration video" width="480"></a>
 
