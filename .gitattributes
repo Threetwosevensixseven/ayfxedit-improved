@@ -4,3 +4,5 @@
 *.c linguist-language=cpp
 *.cpp linguist-language=cpp
 *.dfm linguist-language=cpp
+src/lh5/* cpp
+
