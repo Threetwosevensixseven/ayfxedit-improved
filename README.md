@@ -16,7 +16,7 @@
 [Thanks](#thanks)  
 [Contacts](#contacts)  
 
-<a href="https://raw.githubusercontent.com/Threetwosevensixseven/ayfxedit-improved/master/images/screenshot-1.png" title="AYFXedit User Interface"><img src="https://raw.githubusercontent.com/Threetwosevensixseven/ayfxedit-improved/master/images/screenshot-1.png" alt="AYFXedit User Interface" width="480"></a>
+<a href="https://raw.githubusercontent.com/Threetwosevensixseven/ayfxedit-improved/master/images/screenshot-1.png" title="AYFXedit User Interface" target="_blank"><img src="https://raw.githubusercontent.com/Threetwosevensixseven/ayfxedit-improved/master/images/screenshot-1.png" alt="AYFXedit User Interface" width="480"></a>
 
 ## Overview
 
@@ -249,7 +249,7 @@ Besides the player, there is an example program, available as [compiled SCL disk
 
 ## Video
 
-<a href="https://www.youtube.com/watch?v=XI6aW2QSUXw" title="AYFX Editor demonstration video"><img src="https://github.com/Threetwosevensixseven/ayfxedit-improved/raw/master/images/video-1.png" alt="AYFX Editor demonstration video" width="480"></a>
+<a href="https://www.youtube.com/watch?v=XI6aW2QSUXw" title="AYFX Editor demonstration video" target="_blank"><img src="https://github.com/Threetwosevensixseven/ayfxedit-improved/raw/master/images/video-1.png" alt="AYFX Editor demonstration video" width="480"></a>
 
 
 ## Version history
