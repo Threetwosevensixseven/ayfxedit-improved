@@ -4,12 +4,14 @@
 ## Contents
 
 [Overview](#overview)   
+[Improved Version](#improved-version)  
 [Interface](#interface)  
 [Hotkeys](#hotkeys)  
 [Import effects](#import-effects)  
 [Export effects](#export-effects)  
 [File formats](#file-formats)  
-[ZX Spectrum player](#zx-spectrum-player)  
+[ZX Spectrum player](#zx-spectrum-player) 
+[Video](#video)  
 [Version history](#version-history)  
 [Thanks](#thanks)  
 [Contacts](#contacts)  
@@ -245,6 +247,10 @@ The player can play effects using all three AY channels. When there is an empty 
 
 Besides the player, there is an example program, available as [compiled SCL disk image](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/playtest.scl) and [source code](https://github.com/Threetwosevensixseven/ayfxedit-improved/blob/master/z80player/playtest.a80). All keys has sound effects assigned to them. Space key turns on/off music that is played on the second sound chip of TurboSound device (NedoPC version), if it is available. If the TurboSound is absent, music will play on the same chip, producing various sound artefacts.
 
+## Video
+
+[![AYFX Editor demonstration](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=XI6aW2QSUXw)
+
 ## Version history
 
 v0.6 01.02.17   
@@ -257,7 +263,7 @@ v0.1 02.02.06
 ## Thanks
 
 Thanks goes to: 
-* __[Shiru](https://shiru.untergrund.net/aboutme.shtml)__, for the definitive original version of the project;  
+* __[Shiru](https://shiru.untergrund.net/aboutme.shtml)__, for the definitive [original version](https://shiru.untergrund.net/files/ayfxedit.zip) of the project;  
 * __[Alone Coder](http://alonecoder.nedopc.com/zx/)__, for help with the project;  
 * __[Sergey Bulba](https://bulba.untergrund.net/main_e.htm)__, for [AY Emulator](https://bulba.untergrund.net/emulator_e.htm), [Vortex Tracker](https://bulba.untergrund.net/vortex_e.htm), and various docs at his webpage;
 * __[SMT](https://sourceforge.net/u/open-smt/profile/)__, for [UnrealSpeccy](https://sourceforge.net/projects/unrealspeccy/) and [open source VTX format player](https://sourceforge.net/projects/zxssk/);
