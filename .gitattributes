@@ -8,4 +8,5 @@
 *.cpp linguist-language=cpp
 *.dfm linguist-language=cpp
 src/lh5/* linguist-language=cpp
-
+doc/* linguist-documentation
+docs/* linguist-documentation
