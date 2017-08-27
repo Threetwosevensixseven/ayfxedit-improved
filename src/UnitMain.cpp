@@ -466,16 +466,24 @@ void __fastcall TFormMain::DrawEdit(bool full)
 	y=edit_yoff;
 	pp=curOffset;
 	rl=EffectRealLen(curEffect);
-	
+
 	if(full)
 	{
+		Canvas->TextOut(edit_xoff,y,"Pos");
+		Canvas->TextOut(edit_xoff+36,y,"T");
+		Canvas->TextOut(edit_xoff+54,y,"N");
+		Canvas->TextOut(edit_xoff+72,y,"Per");
+		Canvas->TextOut(edit_xoff+108,y,"Ns");
+		Canvas->TextOut(edit_xoff+135,y,"V");
+		Canvas->TextOut(edit_xoff+noise_off,y,"Noise");
+		Canvas->TextOut(edit_xoff+vol_off,y,"Volume");
 		if(period_linear)
 		{
-			Canvas->TextOut(edit_xoff,y,"Pos|T|N|Per|Ns|V|Period (linear)                     |Noise  |Volume ");
+			Canvas->TextOut(edit_xoff+tone_off,y,"Period (linear)");
 		}
 		else
 		{
-			Canvas->TextOut(edit_xoff,y,"Pos|T|N|Per|Ns|V|Period (log)                        |Noise  |Volume ");
+			Canvas->TextOut(edit_xoff+tone_off,y,"Period (log)    ");
 		}
 	}
 	y+=edit_head;
@@ -498,10 +506,12 @@ void __fastcall TFormMain::DrawEdit(bool full)
 		Canvas->Brush->Color=back;
 		Canvas->TextOut(edit_xoff,y,IntToHex(pp,3));
 		str=(ayBank[curEffect].ayEffect[pp].t?"T":"-");
-		Canvas->TextOut(edit_xoff+36,y,str);
+		int toff=ayBank[curEffect].ayEffect[pp].t?0:2;
+		Canvas->TextOut(edit_xoff+toff+36,y,str);
 		str=(ayBank[curEffect].ayEffect[pp].n?"N":"-");
-		Canvas->TextOut(edit_xoff+54,y,str);
-		
+		int noff=ayBank[curEffect].ayEffect[pp].n?0:2;
+		Canvas->TextOut(edit_xoff+noff+54,y,str);
+
 		if(curXpos==0&&pp==curYpos)
 		{
 			Canvas->Brush->Color=clBlack;
@@ -1469,6 +1479,10 @@ TShiftState Shift)
 		ayBank[curEffect].ayEffect[curYpos].n=!ayBank[curEffect].ayEffect[curYpos].n;
 		draw=true;
 		break;
+
+	case 'L':
+
+		break;
 	}
 
 	if(Shift.Contains(ssShift))
@@ -1494,13 +1508,40 @@ int window_border;
 void __fastcall TFormMain::FormCreate(TObject *Sender)
 {
 	int aa;
-	
+
+    BankInit();
+	String params = AnsiString(ParamCount());
+	if (ParamCount() >= 1 && FileExists(ParamStr(1)))
+	{
+		int aa,pp;
+		pp=0;
+		const WCHAR* wc = ParamStr(1).c_str();
+		_bstr_t b(wc);
+		const char* c = b;
+
+		if(BankLoad(c))
+		{
+			SaveDialogBank->FileName=ParamStr(1);
+			TitleUpdate();
+			DrawEdit(false);
+			BankUpdateCount();
+			EffectSwitchEnable();
+			no_click=50;
+		}
+		else
+		{
+			Application->MessageBox(L"Can't load bank '" +b+"'",L"Error",MB_OK);
+		}
+	}
+	else
+	{
+		EffectInit(curEffect);
+		TitleUpdate();
+		no_click=0;
+	}
+
 	mousePrev.y=-1;
 	mousePrev.x=-1;
-	BankInit();
-	EffectInit(curEffect);
-	TitleUpdate();
-	no_click=0;
 	window_border=Height-ClientHeight;
 	MViewLinearPeriodClick(Sender);
 	for(aa=0;aa<max_fx_len;aa++) EffectDefaultStr(ayClipboard[aa]);
@@ -1860,7 +1901,7 @@ void __fastcall TFormMain::MFileMultiLoadClick(TObject *Sender)
 			pp++;
 		}
 		allEffect=pp;
-		
+
 		TitleUpdate();
 		BankUpdateCount();
 		DrawEdit(false);

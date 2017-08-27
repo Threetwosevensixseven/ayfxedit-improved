@@ -4,7 +4,7 @@ object FormMain: TFormMain
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   Caption = 'AYFX'
-  ClientHeight = 500
+  ClientHeight = 400
   ClientWidth = 632
   Color = clWhite
   Font.Charset = RUSSIAN_CHARSET
