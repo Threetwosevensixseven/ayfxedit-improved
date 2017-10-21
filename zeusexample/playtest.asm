@@ -21,6 +21,7 @@ Start                   equ $6200
 Stack                   equ Start-1
 Zeus_PC                 equ Start
 zoSupportStringEscapes  = false
+StartSpectaculator      equ false//true
 
                         org Start
 
@@ -31,8 +32,17 @@ Main                    proc
                         ld bc, $7FFD
                         out (c), a
 
+
+                        call Cls
+                        ld a, 2                         ; Open upper screen channel for printing
+                        call 5633
+                        Print(TextChAny, TextChAny.Len)
+                        ld a, 3
+                        ld (Channel), a
+
                         ld hl, sfxBankAd                ; Initializing the effects player
-                        call AFXINIT
+                        call AFX.Init
+
 
                         call musInitAd                  ; Music initialization
 
@@ -100,31 +110,53 @@ playSfx                 proc                            ; Start the effect
                         push bc
                         push hl
 
-                        ld a, 39                        ; Effect number 39 = key 'space'
+                        ld a, 39
                         cp c
-                        jr nz, playSfx0                 ; Jump if space not pressed
+                        jr z, ChA
+                        dec a
+                        cp c
+                        jr z, ChB
+                        dec a
+                        cp c
+                        jr z, ChC
+                        dec a
+                        cp c
+                        jr z, ChAny
 
-                        ld hl, intProc.enableMusic
-                        ld a, (hl)                      ; Invert flag to set music on
-                        inc a
-                        ld (hl), a
-                        and 1
-                        jr nz, playSfx1                 ; Jump if music turned on
+                        jp playSfx0
 
-                        halt                            ; Music off, turn off AY channels
-                        di
+ChA:
+                        Print(TextA, TextA.Len)
+                        xor a
+                        ld (Channel), a
+                        jp playSfx2
+ChB:
+                        Print(TextB, TextB.Len)
                         ld a, 1
-                        call aySelChip
-                        call musShutAd
-                        ei
-                        jr playSfx1
+                        ld (Channel), a
+                        jp playSfx2
+ChC:
+                        Print(TextC, TextC.Len)
+                        ld a, 2
+                        ld (Channel), a
+                        jp playSfx2
+ChAny:
+                        Print(TextAny, TextAny.Len)
+                        ld a, 3
+                        ld (Channel), a
+                        jp playSfx2
 playSfx0:
                         ld a, (sfxBankAd)               ; Check for effect in the bank
                         dec a
                         cp c
                         jr c, playSfx2                  ; Jump if the bank doesn't have this many effects
+
+                        ld a, (Channel)
+                        cp 3
+                        ld e, a                         ; Channel is in e
                         ld a, c                         ; Actually launch the effect
-                        call AFXPLAY
+                        jp nz, PlayChannel
+                        call AFX.Play
 playSfx1:
                         halt                            ; Delay after pressing a key
                         halt
@@ -135,6 +167,9 @@ playSfx2:
                         pop bc
                         pop af
                         ret
+PlayChannel:
+                        call AFX.PlayChannel
+                        jp playSfx1
 pend
 
 
@@ -163,9 +198,66 @@ tblRowNum:
 CodeSize                equ $-Start
 
 
+Cls                     proc
+                        ld a, $38
+                        ld (23693), a
+                        call 3503
+                        ret
+pend
+
+At                      equ 22
+
+TextA                   proc
+                        db At, 0, 9, "A   "
+   Len                  equ $-TextA
+pend
+
+TextB                   proc
+                        db At, 0, 9, "B   "
+   Len                  equ $-TextB
+pend
+
+TextC                   proc
+                        db At, 0, 9, "C   "
+   Len                  equ $-TextC
+pend
+
+TextAny                 proc
+                        db At, 0, 9, "Free"
+   Len                  equ $-TextAny
+pend
+
+TextChAny               proc
+                        db At, 0, 0, "Channel: Free", 13
+                        db "________________________________"
+                        db 13, 13, "KEYS:", 13, 13
+                        db "SPACE:  Lock to channel A", 13
+                        db "SYMBOL: Lock to channel B", 13
+                        db "M:      Lock to channel C", 13
+                        db "N:      Any free channel", 13, 13
+                        db "OTHER:  Play FX sound (0-36)"
+   Len                  equ $-TextChAny
+pend
+
+Print                   macro(PrintAddr, PrintLen)
+                        push af
+                        push bc
+                        push de
+                        push hl
+                        ld de, PrintAddr
+                        ld bc, PrintLen
+                        call 8252
+                        pop hl
+                        pop de
+                        pop bc
+                        pop af
+mend
+
+Channel:                db 3                            ; 0=A, 1=B, 2=C, 3=Any
+
 
 org sfxBankAd
-import_bin "..\sfxcollection\zxmsxdemo\firebird.afb"
+import_bin "playtest.afb"
 sfxBankSize = $-sfxBankAd
 
 
@@ -188,7 +280,7 @@ enableMusic equ $+1:    ld a, 0                         ; Music on?
 noMusic:
                         xor a                           ; Choose the first AY
                         call aySelChip
-                        call AFXFRAME                   ; Lose the effects
+                        call AFX.Frame                  ; Lose the effects
 
                         pop hl
                         pop de
@@ -200,8 +292,6 @@ End:
 Size = $-intProc
 pend
 
-
-
 org musInitAd
 //import_bin "..\music\music.pt3"
                         ret                             ; Stub routines
@@ -211,15 +301,19 @@ org musShutAd
                         ret
 musicSize = $-musInitAd
 
+if (StartSpectaculator)
+  zeusinvoke "spectaculator.bat"
+endif
 
-output_z80 "playtest.z80", Stack, Start
-output_szx "playtest.szx", $0000, Start
-output_tzx "playtest.tzx", "playtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
-output_tzx_block "playtest.tzx", sfxBankAd, sfxBankSize
-output_tzx_block "playtest.tzx", intProc,   intProc.Size
-output_tzx_block "playtest.tzx", musInitAd, musicSize
-output_tap "playtest.tap", "playtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
-output_tap_block "playtest.tap", sfxBankAd, sfxBankSize
-output_tap_block "playtest.tap", intProc,   intProc.Size
-output_tap_block "playtest.tap", musInitAd, musicSize
+output_z80 "ayfxtest.z80", Stack, Start
+output_szx "ayfxtest.szx", $0000, Start
+output_tzx "ayfxtest.tzx", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
+output_tzx_block "ayfxtest.tzx", sfxBankAd, sfxBankSize
+output_tzx_block "ayfxtest.tzx", intProc,   intProc.Size
+output_tzx_block "ayfxtest.tzx", musInitAd, musicSize
+output_tap "ayfxtest.tap", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
+output_tap_block "ayfxtest.tap", sfxBankAd, sfxBankSize
+output_tap_block "ayfxtest.tap", intProc,   intProc.Size
+output_tap_block "ayfxtest.tap", musInitAd, musicSize
+//zeusdatabreakpoint 11, "zeusprinthex(addr>=Test1 && addr<=Test2, addr), addr>=Test1 && addr<=Test2", $4000, $C000
 

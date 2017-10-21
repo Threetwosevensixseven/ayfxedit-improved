@@ -23,15 +23,33 @@
 ;                                                               ;
 ; --------------------------------------------------------------;
 
+AFX proc
 
 ; Channel descriptors, 4 bytes per channel:
-; +0 (2) current address (channel is free, if high byte=$00)
+; +0 (2) current address (channel is free if high byte=$00)
 ; +2 (2) sound effect time
-; ...
+; +2 (2) start frame of sustain (sustain is disabled if high byte=$00)
+; +2 (2) start frame of release (loops between start frame and the frame before this one)
+afxChDesc proc
+  CurrentAddrChA:       ds 2
+  EffectTimeChA:        ds 2
+  SustainFrameChA:      ds 2
+  ReleaseFrameChA:      ds 2
 
-afxChDesc               DS 3*4
+  CurrentAddrChB:       ds 2
+  EffectTimeChB:        ds 2
+  SustainFrameChB:      ds 2
+  ReleaseFrameChB:      ds 2
 
+  CurrentAddrChC:       ds 2
+  EffectTimeChC:        ds 2
+  SustainFrameChC:      ds 2
+  ReleaseFrameChC:      ds 2
 
+  Count equ 3
+  Len   equ $-CurrentAddrChA
+  Size  equ Len/Count
+pend
 
 
 ; --------------------------------------------------------------;
@@ -40,13 +58,14 @@ afxChDesc               DS 3*4
 ; Input: HL = bank address with effects                         ;
 ; --------------------------------------------------------------;
 
-AFXINIT                 proc
+Init:
                         inc hl
-                        ld (AFXPLAY.afxBnkAdr+1), hl    ; Save the address of the table of offsets
-
+                        ld (afxBnkAdr1+1), hl           ; Save the address of the table of offsets
+                        ld (afxBnkAdr2+1), hl           ; Save the address of the table of offsets
                         ld hl, afxChDesc                ; Mark all channels as empty
                         ld de, $00ff
-                        ld bc, $0cfd
+                        ld bc, (afxChDesc.Count*256)+$fd
+                        ld a, $55
 afxInit0:
                         ld (hl), d
                         inc hl
@@ -55,6 +74,14 @@ afxInit0:
                         ld (hl), e
                         inc hl
                         ld (hl), e
+                        inc hl
+                        ld (hl), a
+                        inc hl
+                        ld (hl), a
+                        inc hl
+                        ld (hl), a
+                        inc hl
+                        ld (hl), a
                         inc hl
                         djnz afxInit0
 
@@ -68,21 +95,19 @@ afxInit1:
                         out (c), d
                         jr nz, afxInit1
 
-                        ld (AFXFRAME.afxNseMix+1), de   ; Reset the player variables
+                        ld (afxNseMix+1), de            ; Reset the player variables
 
                         ret
-pend
+
 
 
 ; --------------------------------------------------------------;
 ; Play the current frame.                                       ;
 ; No parameters.                                                ;
 ; --------------------------------------------------------------;
-
-AFXFRAME                proc
+Frame:
                         ld bc, $03fd
                         ld ix, afxChDesc
-
 afxFrame0:
                         push bc
 
@@ -134,7 +159,7 @@ afxFrame1:
                         sub $20
                         jr c, afxFrame2                 ; Less than $20, play on
                         ld h, a                         ; Otherwise the end of the effect
-                        ld c, $ff
+                        ld c,$ff
                         ld b, c                         ; In BC we record the most time
                         jr afxFrame6
 
@@ -174,7 +199,7 @@ afxFrame6:
                         ld (ix+1), h
 
 afxFrame7:
-                        ld bc, 4                        ; Go to the next channel
+                        ld bc, 8                        ; Go to the next channel
                         add ix, bc
                         pop bc
                         djnz afxFrame0
@@ -194,21 +219,33 @@ afxNseMix:
                         out (c), d
 
                         ret
-pend
+
 
 
 ; --------------------------------------------------------------;
-; Launch the effect on a free channel. If no free channels,     ;
-; the longest sounding is selected.                             ;
+; Launch the effect on a specific channel. Any sound currently  ;
+; playing on that channel is terminated next frame.             ;
 ; Input: A = Effect number 0..255                               ;
+;        E = Channel (A=0, B=1, C=2)                            ;
 ; --------------------------------------------------------------;
-
-AFXPLAY                 proc
+PlayChannel:
+                        push af
+                        ld a, e
+                        add a, a
+                        add a, a
+                        add a, a
+                        ld e, a
+                        ld d, 0
+                        ld ix, afxChDesc
+                        add ix, de
+                        ld e, 3
+                        add ix, de
+                        pop af
                         ld de, 0                        ; In DE the longest time in search
                         ld h, e
                         ld l, a
                         add hl, hl
-afxBnkAdr:
+afxBnkAdr2:
                         ld bc, 0                        ; Address of the effect offsets table
                         add hl, bc
                         ld c, (hl)
@@ -216,7 +253,26 @@ afxBnkAdr:
                         ld b, (hl)
                         add hl, bc                      ; The effect address is obtained in hl
                         push hl                         ; Save the effect address on the stack
+                        jp DoPlay
 
+; --------------------------------------------------------------;
+; Launch the effect on a free channel. If no free channels,     ;
+; the longest sounding is selected.                             ;
+; Input: A = Effect number 0..255                               ;
+; --------------------------------------------------------------;
+Play:
+                        ld de, 0                        ; In DE the longest time in search
+                        ld h, e
+                        ld l, a
+                        add hl, hl
+afxBnkAdr1:
+                        ld bc, 0                        ; Address of the effect offsets table
+                        add hl, bc
+                        ld c, (hl)
+                        inc hl
+                        ld b, (hl)
+                        add hl, bc                      ; The effect address is obtained in hl
+                        push hl                         ; Save the effect address on the stack
                         ld hl, afxChDesc                ; Empty channel search
                         ld b, 3
 afxPlay0:
@@ -235,9 +291,11 @@ afxPlay0:
                         push hl                         ; Remember the channel address+3 in IX
                         pop ix
 afxPlay1:
-                        inc hl
+                        ld a, 5
+                        Add(hl, a)
                         djnz afxPlay0
-
+DoPlay:
+//BP:                     zeusdatabreakpoint 1, "zeusprinthex(1, ix)", BP
                         pop de                          ; Take the effect address from the stack
                         ld (ix-3), e                    ; Put in the channel descriptor
                         ld (ix-2), d
@@ -246,4 +304,20 @@ afxPlay1:
 
                         ret
 pend
+
+Add                     macro(XX, Y)
+                        if (length(XX)<>2)
+                          zeuserror XX, " is not a 16-bit register"
+                        endif
+                        if (length(Y)<>1)
+                          zeuserror Y, " is not a 8-bit register"
+                        endif
+                        xhi = XX[1]
+                        xlo = XX[2]
+                        add \Y, \xlo
+                        ld \xlo, Y
+                        adc \Y, \xhi
+                        sub \Y, \xlo
+                        ld \xhi, \Y
+mend
 
