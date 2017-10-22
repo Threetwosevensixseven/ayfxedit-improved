@@ -1,4 +1,4 @@
-; -Minimal ayFX player (Improved)  v2.03  22/10/17--------------;
+; -Minimal ayFX player (Improved)  v2.04  22/10/17--------------;
 ; https://github.com/Threetwosevensixseven/ayfxedit-improved    ;
 ; Zeus format (http://www.desdes.com/products/oldfiles)         ;
 ;                                                               ;
@@ -42,7 +42,9 @@
 ;   ld bc, the bank address + the sustain address offset        ;
 ;   call AFXSustain                                             ;
 ;                                                               ;
-; Change log:                                                   ;
+; Change log:      												;
+;   v2.04  22/10/17  Bug fix: EffectTime was not fully          ;
+;                    initialised.                               ;
 ;   v2.03  22/10/17  Bug fix: disabled loop markers should have ;
 ;                    MSB $00, as $FF could be a valid address.  ;
 ;                    Backported Zeus player to Pasmo format.    ;
@@ -83,7 +85,7 @@ afxInit0:
                         inc hl
                         ld (hl), e
                         inc hl
-                        ld (hl), d
+                        ld (hl), e
                         inc hl
                         ld (hl), d
                         inc hl

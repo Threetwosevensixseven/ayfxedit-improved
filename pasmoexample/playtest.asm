@@ -1,4 +1,4 @@
-; -Sound effects player test (looped version)  v2.03  22/10/17--;
+; -Sound effects player test (looped version)  v2.04  22/10/17--;
 ;                                                               ;
 ; A test program that uses the Minimal ayFX player (Improved).  ;
 ; Plays effects on the regular AY (second AY is removed here -  ;
