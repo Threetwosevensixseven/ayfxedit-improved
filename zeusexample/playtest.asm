@@ -1,20 +1,20 @@
-; -Sound effects player test------------------------------------;
+; -Sound effects player test (looped version)  v2.03  22/10/17--;
 ;                                                               ;
-; A test program that uses the Minimal ayFX player.             ;
-; Plays effects on the regular AY; If there is a second AY      ;
-; using the NedoPC scheme, you can turn this on and play        ;
-; music on it.                                                  ;
-; Keys 1-0,Q-P,A-L,Z-M,SS,CS play the effects 0..38             ;
-; (You can download a bank with fewer effects),                 ;
-; The 'space' key turns the music in the second AY on / off.    ;
+; A test program that uses the Minimal ayFX player (Improved).  ;
+; Plays effects on the regular AY (second AY is removed here -  ;
+; see z80player/playtest.a80 for the original 2nd AY version).  ;
+; Zeus format (http://www.desdes.com/products/oldfiles)         ;
+; Forked from https://shiru.untergrund.net/software.shtml       ;
+;                                                               ;
+; Keys Space,CS,M,N selects channels A/B/C/first free channel.  ;
+; Keys 1-0,Q-P,A-L,Z-B,SS play the effects 0..35                ;
+; (You can download a bank with fewer effects).                 ;
+; Key J demos sustain loop: choose channel A/B/C and hold J.    ;
 ;                                                               ;
 ; --------------------------------------------------------------;
 
 zeusemulate             "128K"
 sfxBankAd               equ $a000                       ; Effects Bank Address
-musInitAd               equ $c000                       ; Compiled music address (PT3)
-musPlayAd               equ musInitAd+5
-musShutAd               equ musInitAd+8
 im2Ad                   equ $bdbd
 im2Table                equ $be00
 Start                   equ $6200
@@ -42,9 +42,6 @@ Main                    proc
 
                         ld hl, sfxBankAd                ; Initializing the effects player
                         call AFX.Init
-
-
-                        call musInitAd                  ; Music initialization
 
                         xor a                           ; Music is off by default
                         ld (intProc.enableMusic), a
@@ -110,8 +107,6 @@ keyRowR:
 
                         jr mainLoop
 pend
-
-
 
 playSfx                 proc                            ; Start the effect
                         push af
@@ -207,8 +202,6 @@ PlayChannel:
                         jp playSfx1
 pend
 
-
-
 aySelChip               proc                            ; Procedure for selecting the chosen AY
                         ld bc, $fffd
                         xor b
@@ -216,11 +209,7 @@ aySelChip               proc                            ; Procedure for selectin
                         ret
 pend
 
-
-
 include                 "ayfxplay.asm"                  ; Include the source of the effects player
-
-
 
 ; A table for polling the keyboard
 ; First byte  - high byte of the port address
@@ -270,7 +259,7 @@ TextChAny               proc
                         db "SYMBOL: Lock to channel B", 13
                         db "M:      Lock to channel C", 13
                         db "N:      Any free channel", 13, 13
-                        db "OTHER:  Play FX sound (0-36)"
+                        db "OTHER:  Play FX sound (0-35)"
    Len                  equ $-TextChAny
 pend
 
@@ -291,12 +280,9 @@ mend
 Channel:                db 3                            ; 0=A, 1=B, 2=C, 3=Any
 LastSustain:            db 0
 
-
 org sfxBankAd
 import_bin "playtest.afb"
 sfxBankSize = $-sfxBankAd
-
-
 
 org im2Ad
 
@@ -312,7 +298,7 @@ enableMusic equ $+1:    ld a, 0                         ; Music on?
 
                         ld a, 1                         ; Choose the second AY
                         call aySelChip
-                        call musPlayAd                  ; Play music
+                        ;call musPlayAd                  ; Play music
 noMusic:
                         xor a                           ; Choose the first AY
                         call aySelChip
@@ -328,15 +314,6 @@ End:
 Size = $-intProc
 pend
 
-org musInitAd
-//import_bin "..\music\music.pt3"
-                        ret                             ; Stub routines
-org musPlayAd
-                        ret
-org musShutAd
-                        ret
-musicSize = $-musInitAd
-
 if (StartSpectaculator)
   zeusinvoke "spectaculator.bat"
 endif
@@ -346,9 +323,7 @@ output_szx "ayfxtest.szx", $0000, Start
 output_tzx "ayfxtest.tzx", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
 output_tzx_block "ayfxtest.tzx", sfxBankAd, sfxBankSize
 output_tzx_block "ayfxtest.tzx", intProc,   intProc.Size
-output_tzx_block "ayfxtest.tzx", musInitAd, musicSize
 output_tap "ayfxtest.tap", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
 output_tap_block "ayfxtest.tap", sfxBankAd, sfxBankSize
 output_tap_block "ayfxtest.tap", intProc,   intProc.Size
-output_tap_block "ayfxtest.tap", musInitAd, musicSize
 

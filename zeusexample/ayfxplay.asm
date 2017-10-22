@@ -1,5 +1,8 @@
-; -Minimal ayFX player v0.15 06.05.06---------------------------;
+; -Minimal ayFX player (Improved)  v2.03  22/10/17--------------;
+; https://github.com/Threetwosevensixseven/ayfxedit-improved    ;
+; Zeus format (http://www.desdes.com/products/oldfiles)         ;
 ;                                                               ;
+; Forked from  v0.15  06/05/06                                  ;
 ; https://shiru.untergrund.net/software.shtml                   ;
 ;                                                               ;
 ; The simplest effects player. Plays effects on one AY,         ;
@@ -12,15 +15,42 @@
 ;                                                               ;
 ; Initialization:                                               ;
 ;   ld hl, the address of the effects bank                      ;
-;   call AFXINIT4                                               ;
+;   call AFX.Init                                               ;
 ;                                                               ;
 ; Start the effect:                                             ;
 ;   ld a, the number of the effect (0..255)                     ;
-;   call AFXPLAY4                                               ;
+;   call AFX.Play                                               ;
 ;                                                               ;
 ; In the interrupt handler:                                     ;
-;   call AFXFRAME4                                              ;
+;   call AFX.Frame                                              ;
 ;                                                               ;
+; Start the effect on a specified channel:                      ;
+;   ld a, the number of the effect (0..255)                     ;
+;   ld e, the number of the channel (A=0, B=1, C=2)             ;
+;   call AFX.PlayChannel                                        ;
+;                                                               ;
+; Start the effect with sustain loop enabled:                   ;
+;   ld a, the number of the effect (0..255)                     ;
+;   ld e, the number of the channel (A=0, B=1, C=2)             ;
+;   ld bc, the bank address + the release address offset        ;
+;   call AFX.PlayChannel                                        ;
+;                                                               ;
+; Notify AFX.Frame that the should be should be looped back to  ;
+; the sustain point once the release point has been reached:    ;
+;   ld a, the number of the effect (0..255)                     ;
+;   ld e, the number of the channel (A=0, B=1, C=2)             ;
+;   ld bc, the bank address + the sustain address offset        ;
+;   call AFX.Sustain                                            ;
+;                                                               ;
+; Change log:                                                   ;
+;   v2.03  22/10/17  Bug fix: disabled loop markers should have ;
+;                    MSB $00, as $FF could be a valid address.  ;
+;                    Backported Zeus player to Pasmo format.    ;
+;   v2.02  21/10/17  Added the ability to loop a sound while    ;
+;                    receiving sustain messages.                ;
+;   v2.01  21/10/17  Added the ability to play a sound on a     ;
+;                    specific channel.                          ;
+;   v2.00  27/08/17  Converted Z80 player to Zeus format.       ;
 ; --------------------------------------------------------------;
 
 AFX proc
@@ -34,8 +64,8 @@ DebugPrintAddresses     equ false                       ; If true, will print th
 ; Channel descriptors, 4 bytes per channel:
 ; +0 (2) current address (channel is free if high byte=$00)
 ; +2 (2) sound effect time
-; +2 (2) start frame of sustain (sustain is disabled if high byte=$00)
-; +2 (2) start frame of release (loops between start frame and the frame before this one)
+; +2 (2) start address of sustain loop (disabled if high byte=$00)
+; +2 (2) end address of sustain loop (disabled if high byte=$00)
 afxChDesc proc
   CurrentAddrChA:       ds 2
   EffectTimeChA:        ds 2
@@ -79,15 +109,15 @@ afxInit0:
                         inc hl
                         ld (hl), e
                         inc hl
-                        ld (hl), e
+                        ld (hl), d
                         inc hl
-                        ld (hl), e
+                        ld (hl), d
                         inc hl
-                        ld (hl), e
+                        ld (hl), d
                         inc hl
-                        ld (hl), e
+                        ld (hl), d
                         inc hl
-                        ld (hl), e
+                        ld (hl), d
                         inc hl
                         djnz afxInit0
 
@@ -235,19 +265,19 @@ CheckRelease:
                         cp l
                         ret nz                          ; Carry on if no MLB match
                         ld a, (ix+7)                    ; get release MSB
-                        cp $FF
+                        or a
                         ret z                           ; Carry on if release disabled
                         cp h
                         ret nz                          ; Carry on if no MSB match
                         push bc
                         ld a, (ix+4)
-                        cp $FF
+                        or a
                         jp z, NoLoop
                         ld a, (ix+5)                    ; Set CurrentAddrCh[N] back
                         ld (ix+1), a                    ; to  SustainAddrCh[N] LSB
                         ld a, (ix+4)                    ;
                         ld (ix+0), a                    ; and                  MSB
-                        ld a, $FF
+                        xor a
                         ld (ix+4), a                    ; then toggle off the sustain
                         ld (ix+5), a                    ; to require it to be resent
 NoLoop:
@@ -262,7 +292,7 @@ NoLoop:
 ;        E = Channel (A=0, B=1, C=2)                            ;
 ; --------------------------------------------------------------;
 PlayChannel:
-                        ld bc, $FFFF
+                        ld bc, $0000
 
 ; --------------------------------------------------------------;
 ; Launch the effect on a specific channel. Any sound currently  ;
@@ -362,7 +392,7 @@ DoPlay:
 
 ReleaseLoSMC equ $+3:   ld (ix+3), SMC                  ; <SMC Release LSB
 ReleaseHiSMC equ $+3:   ld (ix+4), SMC                  ; <SMC Release MSB
-                        ld a, $FF
+                        xor a
                         ld (ix+1), a                    ; Reset sustain LSB
                         ld (ix+2), a                    ; Reset sustain MSB
                         ret
