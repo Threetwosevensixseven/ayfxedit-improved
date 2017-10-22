@@ -21,7 +21,7 @@ Start                   equ $6200
 Stack                   equ Start-1
 Zeus_PC                 equ Start
 zoSupportStringEscapes  = false
-StartSpectaculator      equ false//true
+StartSpectaculator      equ true
 
                         org Start
 
@@ -100,6 +100,14 @@ keyRowR:
                         pop bc
                         djnz keyLoop
 
+                        push bc
+                        ld bc, $BFFE
+                        in a, (c)                       ; Check for J
+                        cpl
+                        and %01000
+                        ld (LastSustain), a
+                        pop bc
+
                         jr mainLoop
 pend
 
@@ -122,6 +130,9 @@ playSfx                 proc                            ; Start the effect
                         dec a
                         cp c
                         jr z, ChAny
+                        ld a, $1A
+                        cp c
+                        jp z, SustainSound
 
                         jp playSfx0
 
@@ -145,6 +156,30 @@ ChAny:
                         ld a, 3
                         ld (Channel), a
                         jp playSfx2
+SustainSound:
+                        ld a, (Channel)
+                        cp 3
+                        jp nc, playSfx0                 ; If not locked to a channel do a normal Play
+                        ld a, (LastSustain)
+                        or a
+                        jp z, PlaySustain               ; If not already playing do a normal Play
+                        ld a, (Channel)
+                        ld e, a                         ;  e = channel no (0=A, 1=B, 2=C)
+                        ld bc, sfxBankAd+$08F5          ; bc = Loop start/sustain address (time frame $0810)
+                        call AFX.Sustain
+                        jp playSfx2
+PlaySustain:
+                        ld a, (sfxBankAd)               ; Check for effect in the bank
+                        dec a
+                        cp c
+                        jr c, playSfx2                  ; Jump if the bank doesn't have this many effects
+                        ld a, (Channel)
+                        cp 3
+                        ld e, a                         ; e = channel no (0=A, 1=B, 2=C)
+                        ld a, c                         ; a = effect no
+                        ld bc, sfxBankAd+$0904          ; bc = Loop end/release address (time frame $0815)
+                        call AFX.PlayLooped
+                        jp playSfx1
 playSfx0:
                         ld a, (sfxBankAd)               ; Check for effect in the bank
                         dec a
@@ -254,6 +289,7 @@ Print                   macro(PrintAddr, PrintLen)
 mend
 
 Channel:                db 3                            ; 0=A, 1=B, 2=C, 3=Any
+LastSustain:            db 0
 
 
 org sfxBankAd
@@ -315,5 +351,4 @@ output_tap "ayfxtest.tap", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
 output_tap_block "ayfxtest.tap", sfxBankAd, sfxBankSize
 output_tap_block "ayfxtest.tap", intProc,   intProc.Size
 output_tap_block "ayfxtest.tap", musInitAd, musicSize
-//zeusdatabreakpoint 11, "zeusprinthex(addr>=Test1 && addr<=Test2, addr), addr>=Test1 && addr<=Test2", $4000, $C000
 

@@ -25,6 +25,12 @@
 
 AFX proc
 
+SMC                     equ 0
+DebugPrintAddresses     equ false                       ; If true, will print the address offsets
+                                                        ; of each FX frame as they are played.
+                                                        ; Add these to sfxBankAd when passing BC into
+                                                        ; AFX.PlayLooped or AFX.Sustain.
+
 ; Channel descriptors, 4 bytes per channel:
 ; +0 (2) current address (channel is free if high byte=$00)
 ; +2 (2) sound effect time
@@ -33,18 +39,18 @@ AFX proc
 afxChDesc proc
   CurrentAddrChA:       ds 2
   EffectTimeChA:        ds 2
-  SustainFrameChA:      ds 2
-  ReleaseFrameChA:      ds 2
+  SustainAddrChA:       ds 2
+  ReleaseAddrChA:       ds 2
 
   CurrentAddrChB:       ds 2
   EffectTimeChB:        ds 2
-  SustainFrameChB:      ds 2
-  ReleaseFrameChB:      ds 2
+  SustainAddrChB:       ds 2
+  ReleaseAddrChB:       ds 2
 
   CurrentAddrChC:       ds 2
   EffectTimeChC:        ds 2
-  SustainFrameChC:      ds 2
-  ReleaseFrameChC:      ds 2
+  SustainAddrChC:       ds 2
+  ReleaseAddrChC:       ds 2
 
   Count equ 3
   Len   equ $-CurrentAddrChA
@@ -55,6 +61,7 @@ pend
 ; --------------------------------------------------------------;
 ; Initialize the effects player.                                ;
 ; Turns off all channels, sets variables.                       ;
+;                                                               ;
 ; Input: HL = bank address with effects                         ;
 ; --------------------------------------------------------------;
 
@@ -65,7 +72,6 @@ Init:
                         ld hl, afxChDesc                ; Mark all channels as empty
                         ld de, $00ff
                         ld bc, (afxChDesc.Count*256)+$fd
-                        ld a, $55
 afxInit0:
                         ld (hl), d
                         inc hl
@@ -75,13 +81,13 @@ afxInit0:
                         inc hl
                         ld (hl), e
                         inc hl
-                        ld (hl), a
+                        ld (hl), e
                         inc hl
-                        ld (hl), a
+                        ld (hl), e
                         inc hl
-                        ld (hl), a
+                        ld (hl), e
                         inc hl
-                        ld (hl), a
+                        ld (hl), e
                         inc hl
                         djnz afxInit0
 
@@ -103,6 +109,7 @@ afxInit1:
 
 ; --------------------------------------------------------------;
 ; Play the current frame.                                       ;
+;                                                               ;
 ; No parameters.                                                ;
 ; --------------------------------------------------------------;
 Frame:
@@ -116,6 +123,10 @@ afxFrame0:
                         cp h
                         jr nc, afxFrame7                ; The channel does not play, we skip
                         ld l, (ix+0)
+
+                        if DebugPrintAddresses
+BPAddress:                zeusdatabreakpoint 3, "zeusprinthex(1, hl-sfxBankAd)", BPAddress
+                        endif
 
                         ld e, (hl)                      ; We take the value of the information byte
                         inc hl
@@ -198,6 +209,7 @@ afxFrame6:
                         ld (ix+0), l                    ; Save the changed address
                         ld (ix+1), h
 
+                        call CheckRelease
 afxFrame7:
                         ld bc, 8                        ; Go to the next channel
                         add ix, bc
@@ -217,19 +229,59 @@ afxNseMix:
                         out (c), a
                         ld b, l
                         out (c), d
-
                         ret
-
-
+CheckRelease:
+                        ld a, (ix+6)                    ; get release LSB
+                        cp l
+                        ret nz                          ; Carry on if no MLB match
+                        ld a, (ix+7)                    ; get release MSB
+                        cp $FF
+                        ret z                           ; Carry on if release disabled
+                        cp h
+                        ret nz                          ; Carry on if no MSB match
+                        push bc
+                        ld a, (ix+4)
+                        cp $FF
+                        jp z, NoLoop
+                        ld a, (ix+5)                    ; Set CurrentAddrCh[N] back
+                        ld (ix+1), a                    ; to  SustainAddrCh[N] LSB
+                        ld a, (ix+4)                    ;
+                        ld (ix+0), a                    ; and                  MSB
+                        ld a, $FF
+                        ld (ix+4), a                    ; then toggle off the sustain
+                        ld (ix+5), a                    ; to require it to be resent
+NoLoop:
+                        pop bc
+                        ret
 
 ; --------------------------------------------------------------;
 ; Launch the effect on a specific channel. Any sound currently  ;
 ; playing on that channel is terminated next frame.             ;
+;                                                               ;
 ; Input: A = Effect number 0..255                               ;
 ;        E = Channel (A=0, B=1, C=2)                            ;
 ; --------------------------------------------------------------;
 PlayChannel:
+                        ld bc, $FFFF
+
+; --------------------------------------------------------------;
+; Launch the effect on a specific channel. Any sound currently  ;
+; playing on that channel is terminated next frame.             ;
+; During playback, when reaching ReleaseAddrCh[N], if an        ;
+; AFX.Sustain call has been received since this AFX.PlayLooped  ;
+; returned, the playback time frame will loop back to           ;
+; SustainAddrCh[N].                                             ;
+;                                                               ;
+; Input: A = Effect number 0..255                               ;
+;        E = Channel (A=0, B=1, C=2)                            ;
+;       BC = ReleaseAddrCh[N]                                   ;
+; --------------------------------------------------------------;
+PlayLooped:
                         push af
+                        ld a, c
+                        ld (ReleaseLoSMC), a            ; SMC>
+                        ld a, b
+                        ld (ReleaseHiSMC), a            ; SMC>
                         ld a, e
                         add a, a
                         add a, a
@@ -258,9 +310,16 @@ afxBnkAdr2:
 ; --------------------------------------------------------------;
 ; Launch the effect on a free channel. If no free channels,     ;
 ; the longest sounding is selected.                             ;
+;                                                               ;
 ; Input: A = Effect number 0..255                               ;
 ; --------------------------------------------------------------;
 Play:
+                        push af
+                        ld a, c
+                        ld (ReleaseLoSMC), a            ; SMC>
+                        ld a, b
+                        ld (ReleaseHiSMC), a            ; SMC>
+                        pop af
                         ld de, 0                        ; In DE the longest time in search
                         ld h, e
                         ld l, a
@@ -295,13 +354,39 @@ afxPlay1:
                         Add(hl, a)
                         djnz afxPlay0
 DoPlay:
-//BP:                     zeusdatabreakpoint 1, "zeusprinthex(1, ix)", BP
                         pop de                          ; Take the effect address from the stack
                         ld (ix-3), e                    ; Put in the channel descriptor
                         ld (ix-2), d
                         ld (ix-1), b                    ; Zero the playing time
                         ld (ix-0), b
 
+ReleaseLoSMC equ $+3:   ld (ix+3), SMC                  ; <SMC Release LSB
+ReleaseHiSMC equ $+3:   ld (ix+4), SMC                  ; <SMC Release MSB
+                        ld a, $FF
+                        ld (ix+1), a                    ; Reset sustain LSB
+                        ld (ix+2), a                    ; Reset sustain MSB
+                        ret
+
+; --------------------------------------------------------------;
+; Notify AFX.Frame that the sound in channel E should be looped ;
+; back to SustainAddrCh[N] once ReleaseAddrCh[N] has been       ;
+; reached,provided playback was started with AFX.PlayLooped     ;
+;                                                               ;
+; Input: E = Channel (A=0, B=1, C=2)                            ;
+;       BC = SustainAddrCh[N]                                   ;
+; --------------------------------------------------------------;
+Sustain:
+                        ld a, e
+                        add a, a
+                        add a, a
+                        add a, a
+                        ld e, 4
+                        add a, e
+                        ld hl, afxChDesc
+                        Add(hl, a)
+                        ld (hl), c
+                        inc hl
+                        ld (hl), b
                         ret
 pend
 
@@ -319,5 +404,11 @@ Add                     macro(XX, Y)
                         adc \Y, \xhi
                         sub \Y, \xlo
                         ld \xhi, \Y
+mend
+
+CpHL                    macro(Register16)
+                        or a
+                        sbc hl, Register16
+                        add hl, Register16
 mend
 
