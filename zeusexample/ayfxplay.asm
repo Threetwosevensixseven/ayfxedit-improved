@@ -33,7 +33,7 @@
 ;   ld a, the number of the effect (0..255)                     ;
 ;   ld e, the number of the channel (A=0, B=1, C=2)             ;
 ;   ld bc, the bank address + the release address offset        ;
-;   call AFX.PlayChannel                                        ;
+;   call AFX.PlayLooped                                        ;
 ;                                                               ;
 ; Notify AFX.Frame that the should be should be looped back to  ;
 ; the sustain point once the release point has been reached:    ;
@@ -58,10 +58,13 @@
 AFX proc
 
 SMC                     equ 0
-DebugPrintAddresses     equ false                       ; If true, will print the address offsets
+DebugPrintAddresses     equ false                        ; If true, will print the address offsets
                                                         ; of each FX frame as they are played.
                                                         ; Add these to sfxBankAd when passing BC into
                                                         ; AFX.PlayLooped or AFX.Sustain.
+if !def sfxBankPageOffset
+  sfxBankPageOffset     equ 0                           ; Allows for ayFX to be located in a different RAM bank
+endif
 
 ; Channel descriptors, 4 bytes per channel:
 ; +0 (2) current address (channel is free if high byte=$00)
@@ -135,9 +138,11 @@ afxInit1:
 
                         ld (afxNseMix+1), de            ; Reset the player variables
 
-                        ret
-
-
+                        if def AFXJumpReturns
+                          jp AFXInit.Return
+                        else
+                          ret
+                        endif
 
 ; --------------------------------------------------------------;
 ; Play the current frame.                                       ;
@@ -155,10 +160,6 @@ afxFrame0:
                         cp h
                         jr nc, afxFrame7                ; The channel does not play, we skip
                         ld l, (ix+0)
-
-                        if DebugPrintAddresses
-BPAddress:                zeusdatabreakpoint 3, "zeusprinthex(1, hl-sfxBankAd)", BPAddress
-                        endif
 
                         ld e, (hl)                      ; We take the value of the information byte
                         inc hl
@@ -261,16 +262,39 @@ afxNseMix:
                         out (c), a
                         ld b, l
                         out (c), d
-                        ret
+                        if def AFXJumpReturns
+                          jp AFXFrame.Return
+                        else
+                          ret
+                        endif
 CheckRelease:
+                        if DebugPrintAddresses          ; Prints out a list of all the frame addresses and offsets.
+                                                        ; For each frame, the first value is CurrentAddrChA[N], and
+                                                        ; the second value is the number you need to add to sfxBankAd
+                                                        ; when passing BC into AFX.PlayLooped and AFX.Sustain.
+BPAddress:                zeusdatabreakpoint 3, "zeusprinthex(1, [ix+sfxBankPageOffset]w, [ix+sfxBankPageOffset]w-sfxBankAd)", BPAddress+sfxBankPageOffset
+                        endif
+
                         ld a, (ix+6)                    ; get release LSB
                         cp l
-                        ret nz                          ; Carry on if no MLB match
+                        if def AFXJumpReturns
+                          jp nz, AFXFrame.Return        ; Carry on if no MLB match
+                        else
+                          ret nz                        ; Carry on if no MLB match
+                        endif
                         ld a, (ix+7)                    ; get release MSB
                         or a
-                        ret z                           ; Carry on if release disabled
+                        if def AFXJumpReturns
+                          jp z, AFXFrame.Return         ; Carry on if release disabled
+                        else
+                          ret z                         ; Carry on if release disabled
+                        endif
                         cp h
-                        ret nz                          ; Carry on if no MSB match
+                        if def AFXJumpReturns
+                          jp nz, AFXFrame.Return        ; Carry on if no MLB match
+                        else
+                          ret nz                        ; Carry on if no MLB match
+                        endif
                         push bc
                         ld a, (ix+4)
                         or a
@@ -284,7 +308,11 @@ CheckRelease:
                         ld (ix+5), a                    ; to require it to be resent
 NoLoop:
                         pop bc
-                        ret
+                        if def AFXJumpReturns
+                          jp AFXFrame.Return
+                        else
+                          ret
+                        endif
 
 ; --------------------------------------------------------------;
 ; Launch the effect on a specific channel. Any sound currently  ;
@@ -397,7 +425,11 @@ ReleaseHiSMC equ $+3:   ld (ix+4), SMC                  ; <SMC Release MSB
                         xor a
                         ld (ix+1), a                    ; Reset sustain LSB
                         ld (ix+2), a                    ; Reset sustain MSB
-                        ret
+                        if def AFXJumpReturns
+                          jp AFXPlay.Return
+                        else
+                          ret
+                        endif
 
 ; --------------------------------------------------------------;
 ; Notify AFX.Frame that the sound in channel E should be looped ;
@@ -419,7 +451,11 @@ Sustain:
                         ld (hl), c
                         inc hl
                         ld (hl), b
-                        ret
+                        if def AFXJumpReturns
+                          jp AFXSustain.Return
+                        else
+                          ret
+                        endif
 pend
 
 Add                     macro(XX, Y)

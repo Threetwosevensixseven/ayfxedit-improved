@@ -17,7 +17,7 @@ zeusemulate             "128K"
 sfxBankAd               equ $a000                       ; Effects Bank Address
 im2Ad                   equ $bdbd
 im2Table                equ $be00
-Start                   equ $6200
+Start                   equ $8000
 Stack                   equ Start-1
 Zeus_PC                 equ Start
 zoSupportStringEscapes  = false
@@ -219,9 +219,6 @@ tblRowNum:
                         DB $f7, $00, $ef, $09, $fb, $0a, $df, $13
                         DB $fd, $14, $bf, $1d, $fe, $1e, $7f, $27
 
-CodeSize                equ $-Start
-
-
 Cls                     proc
                         ld a, $38
                         ld (23693), a
@@ -280,6 +277,8 @@ mend
 Channel:                db 3                            ; 0=A, 1=B, 2=C, 3=Any
 LastSustain:            db 0
 
+CodeSize                equ $-Start
+
 org sfxBankAd
 import_bin "playtest.afb"
 sfxBankSize = $-sfxBankAd
@@ -314,16 +313,31 @@ End:
 Size = $-intProc
 pend
 
-if (StartSpectaculator)
-  zeusinvoke "spectaculator.bat"
+MemorySize              equ $-Start
+
+if zeusver < 65
+  zeuserror "Upgrade to Zeus v3.70 or above, available at http://www.desdes.com/products/oldfiles/zeus.htm."
 endif
 
-output_z80 "ayfxtest.z80", Stack, Start
-output_szx "ayfxtest.szx", $0000, Start
-output_tzx "ayfxtest.tzx", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
-output_tzx_block "ayfxtest.tzx", sfxBankAd, sfxBankSize
-output_tzx_block "ayfxtest.tzx", intProc,   intProc.Size
-output_tap "ayfxtest.tap", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
-output_tap_block "ayfxtest.tap", sfxBankAd, sfxBankSize
-output_tap_block "ayfxtest.tap", intProc,   intProc.Size
+if enabled zeusz80
+  if zeuside
+    output_tzx "ayfxtest.tzx", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
+    output_tzx_block "ayfxtest.tzx", sfxBankAd, sfxBankSize
+    output_tzx_block "ayfxtest.tzx", intProc,   intProc.Size
+    output_tap "ayfxtest.tap", "ayfxtest", "(c) Shiru 2006-2017", Start, CodeSize, 3
+    output_tap_block "ayfxtest.tap", sfxBankAd, sfxBankSize
+    output_tap_block "ayfxtest.tap", intProc,   intProc.Size
+    output_z80 "ayfxtest.z80", Stack, Start
+    output_szx "ayfxtest.szx", $0000, Start
+   if (StartSpectaculator)
+     zeusinvoke "spectaculator.bat"
+   endif
+  else
+    output_tzx "ayfxtest.tzx", "ayfxtest", "(c) Shiru 2006-2017", Start, MemorySize, 2
+    output_tap "ayfxtest.tap", "ayfxtest", "(c) Shiru 2006-2017", Start, MemorySize, 2
+    zeusprint "Use the IDE version of Zeus to generate .z80 and .szx files, available at http://www.desdes.com/products/oldfiles/zeus.htm."
+  endif
+else
+   zeuserror "Download the z80 version of Zeus, available at http://www.desdes.com/products/oldfiles/zeus.htm."
+endif
 
