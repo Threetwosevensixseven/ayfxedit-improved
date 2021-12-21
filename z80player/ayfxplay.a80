@@ -42,7 +42,7 @@ AFXINIT
 	
 	ld hl,afxChDesc		;помечаем все каналы как пустые
 	ld de,#00ff
-	ld bc,#0cfd
+	ld bc,#03fd
 afxInit0
 	ld (hl),d
 	inc hl
