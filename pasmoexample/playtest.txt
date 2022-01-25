@@ -38,7 +38,7 @@ TextChAnyLen	EQU 000BEH
 afxBnkAdr1	EQU 064B4H
 afxBnkAdr2	EQU 06498H
 afxChDesc	EQU 06365H
-afxChDescCount	EQU 00018H
+afxChDescCount	EQU 00003H
 afxFrame0	EQU 063B9H
 afxFrame1	EQU 063F1H
 afxFrame2	EQU 06400H

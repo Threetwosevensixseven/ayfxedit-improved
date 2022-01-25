@@ -1,4 +1,4 @@
-; -Minimal ayFX player (Improved)  v2.04  22/10/17--------------;
+; -Minimal ayFX player (Improved)  v2.05  25/01/21--------------;
 ; https://github.com/Threetwosevensixseven/ayfxedit-improved    ;
 ; Zeus format (http://www.desdes.com/products/oldfiles)         ;
 ;                                                               ;
@@ -42,7 +42,10 @@
 ;   ld bc, the bank address + the sustain address offset        ;
 ;   call AFXSustain                                             ;
 ;                                                               ;
-; Change log:      												;
+; Change log:
+;   v2.05  25/01/21  Bug fix: AFXInit was overwriting itself    ;
+;                    the first time it was called, so it        ;
+;                    couldn't ever be called a second time.     ;       												;
 ;   v2.04  22/10/17  Bug fix: EffectTime was not fully          ;
 ;                    initialised.                               ;
 ;   v2.03  22/10/17  Bug fix: disabled loop markers should have ;
@@ -60,8 +63,8 @@
 ; +2 (2) sound effect time
 ; +2 (2) start address of sustain loop (disabled if high byte=$00)
 ; +2 (2) end address of sustain loop (disabled if high byte=$00)
-afxChDesc		DS 3*8
-afxChDescCount  equ $-afxChDesc
+afxChDescCount  equ 3
+afxChDesc       DS afxChDescCount*8
 AFXSMC    	    equ 0
 
 ; --------------------------------------------------------------;
